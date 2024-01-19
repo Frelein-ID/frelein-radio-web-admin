@@ -10,4 +10,5 @@ export interface PersonalityInfo {
   trivia: string;
   image: string;
   source: string;
+  favoritedBy: number;
 }

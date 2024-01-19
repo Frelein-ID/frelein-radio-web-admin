@@ -2,7 +2,7 @@
 
 import { CustomFlowbiteTheme, Sidebar } from 'flowbite-react'
 import React from 'react'
-import { BiPieChartAlt2, BiRadio, BiUser } from 'react-icons/bi';
+import { BiPieChartAlt2, BiRadio, BiUser, BiStar, BiHistory } from 'react-icons/bi';
 
 const sidebarTheme: CustomFlowbiteTheme['sidebar'] = {
     root: {
@@ -23,8 +23,14 @@ const CustomSidebar = () => {
                             <Sidebar.Item href="/admin/radio-info">Information</Sidebar.Item>
                             <Sidebar.Item href="/admin/radio-tracks">Tracks</Sidebar.Item>
                         </Sidebar.Collapse>
-                        <Sidebar.Item href="/admin/personality-info" icon={BiUser}>
+                        <Sidebar.Item href="/admin/personality-info" icon={BiStar}>
                             Personality
+                        </Sidebar.Item>
+                        <Sidebar.Item href="/admin/users" icon={BiUser}>
+                            Users
+                        </Sidebar.Item>
+                        <Sidebar.Item href="/admin/history" icon={BiHistory}>
+                            History
                         </Sidebar.Item>
                     </Sidebar.ItemGroup>
                 </Sidebar.Items>

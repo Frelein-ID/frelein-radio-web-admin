@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { Button, Checkbox, CustomFlowbiteTheme, Table } from 'flowbite-react'
 import Skeleton from 'react-loading-skeleton';
 import { HiPencil, HiOutlineTrash } from "react-icons/hi";
-import { PersonalityInfo } from '../_interfaces/PersonalityInfo';
+import { PersonalityInfo } from '../../_interfaces/PersonalityInfo';
 
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
@@ -35,9 +35,11 @@ const PersonalityInfoTable: React.FC<TableProps> = ({ data, loading }) => {
                 <Table.HeadCell className="p-4">
                     <Checkbox />
                 </Table.HeadCell>
-                <Table.HeadCell>Image</Table.HeadCell>
+                <Table.HeadCell></Table.HeadCell>
                 <Table.HeadCell>Name</Table.HeadCell>
-                <Table.HeadCell>TTL</Table.HeadCell>
+                <Table.HeadCell>Japanese Name</Table.HeadCell>
+                <Table.HeadCell>Birth information</Table.HeadCell>
+                <Table.HeadCell>Favorited by</Table.HeadCell>
                 <Table.HeadCell>
                     <span className="sr-only">Action</span>
                 </Table.HeadCell>
@@ -46,6 +48,8 @@ const PersonalityInfoTable: React.FC<TableProps> = ({ data, loading }) => {
                 {loading ? (
                     <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                         <Table.Cell></Table.Cell>
+                        <Table.Cell><Skeleton /></Table.Cell>
+                        <Table.Cell><Skeleton /></Table.Cell>
                         <Table.Cell><Skeleton /></Table.Cell>
                         <Table.Cell><Skeleton /></Table.Cell>
                         <Table.Cell><Skeleton /></Table.Cell>
@@ -69,10 +73,14 @@ const PersonalityInfoTable: React.FC<TableProps> = ({ data, loading }) => {
                                         <img className='w-full h-auto object-cover' src={info.image} title={info.name} alt={info.name} />
                                     </div>
                                 </Table.Cell>
-                                <Table.Cell className="max-w-40 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
-                                    {info.name} ({info.name_jp})
+                                <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
+                                    {info.name}
                                 </Table.Cell>
-                                <Table.Cell>{`${info.birthplace} - ${formattedDate}`}</Table.Cell>
+                                <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
+                                    {info.name_jp}
+                                </Table.Cell>
+                                <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{`${info.birthplace} - ${formattedDate}`}</Table.Cell>
+                                <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{info.favoritedBy}</Table.Cell>
                                 <Table.Cell>
                                     <div className="grid grid-cols-2 gap-3">
                                         <Button href={`${pathname}/edit/${info.id}`} color='blue'>

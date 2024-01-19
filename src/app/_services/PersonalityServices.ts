@@ -5,13 +5,14 @@ import { PersonalityInfo } from "../_interfaces/PersonalityInfo";
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 export const createPersonalityInfo = async (
-  newRadio: Omit<PersonalityInfo, "id">,
+  newRadio: PersonalityInfo,
   token: string
 ): Promise<PersonalityInfo> => {
   try {
     const response = await axios.post(`${baseURL}/personality-info`, newRadio, {
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
     });
     return response.data;

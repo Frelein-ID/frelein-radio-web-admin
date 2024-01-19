@@ -3,7 +3,7 @@
 import React from 'react'
 import { usePathname } from 'next/navigation'
 import { Button, Checkbox, CustomFlowbiteTheme, Table, Spinner } from 'flowbite-react'
-import { RadioInfo } from '../../_interfaces/RadioInfo';
+import { RadioInfo as RadioTracks } from '../../_interfaces/RadioInfo';
 import Skeleton from 'react-loading-skeleton';
 import { HiPencil, HiOutlineTrash, HiExternalLink } from "react-icons/hi";
 
@@ -16,12 +16,12 @@ const tableTheme: CustomFlowbiteTheme['table'] = {
 }
 
 interface TableProps {
-    data: RadioInfo[] | null;
+    data: RadioTracks[] | null;
     loading: boolean;
 }
 
 
-const RadioInfoTable: React.FC<TableProps> = ({ data, loading }) => {
+const RadioTracksTable: React.FC<TableProps> = ({ data, loading }) => {
     const pathname = usePathname()
     return (
         <Table theme={tableTheme} hoverable>
@@ -90,4 +90,4 @@ const RadioInfoTable: React.FC<TableProps> = ({ data, loading }) => {
     )
 }
 
-export default RadioInfoTable
+export default RadioTracksTable

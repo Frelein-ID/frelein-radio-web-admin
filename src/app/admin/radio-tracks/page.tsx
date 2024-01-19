@@ -112,9 +112,9 @@ const RadioTracks = () => {
                                         <Table.Cell className="max-w-40 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
                                             {tracks.name} ({tracks.name_jp})
                                         </Table.Cell>
-                                        <Table.Cell>{tracks.episode}</Table.Cell>
-                                        <Table.Cell>{formattedDate}</Table.Cell>
-                                        <Table.Cell>{personalities_name_final}</Table.Cell>
+                                        <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{tracks.episode}</Table.Cell>
+                                        <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{formattedDate}</Table.Cell>
+                                        <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{personalities_name_final}</Table.Cell>
                                         <Table.Cell>
                                             <div className="grid grid-cols-2 gap-3">
                                                 <Button href={`${pathname}/edit/${tracks.id}`} color='blue'>
