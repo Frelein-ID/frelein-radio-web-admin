@@ -2,13 +2,12 @@
 
 import React from 'react'
 import { usePathname } from 'next/navigation'
-import { Button, Checkbox, CustomFlowbiteTheme, Table } from 'flowbite-react'
+import { Badge, Button, Checkbox, CustomFlowbiteTheme, Table } from 'flowbite-react'
 import Skeleton from 'react-loading-skeleton';
 import { HiPencil, HiOutlineTrash } from "react-icons/hi";
-import { PersonalityInfo } from '../../_interfaces/PersonalityInfo';
 import swal from 'sweetalert';
 import { WARNING_SUBTITLE, WARNING_TITLE } from '@/app/_constants/constants';
-import { deletePersonalityInfo } from '@/app/_services/PersonalityServices';
+import { Users } from '@/app/_interfaces/Users';
 
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
@@ -19,19 +18,18 @@ const tableTheme: CustomFlowbiteTheme['table'] = {
 }
 
 interface TableProps {
-    data: PersonalityInfo[] | null;
+    data: Users[] | null;
     loading: boolean;
     token: string
 }
 
-let monthNames = [
-    'Januari', 'Februari', 'Maret',
-    'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September',
-    'Oktober', 'November', 'Desember'
-];
+const badgeTheme: CustomFlowbiteTheme['badge'] = {
+    "root": {
+        "base": "flex h-fit justify-center items-center gap-1 font-semibold uppercase",
+    },
+}
 
-const PersonalityInfoTable: React.FC<TableProps> = ({ data, loading, token }) => {
+const UsersTable: React.FC<TableProps> = ({ data, loading, token }) => {
     const pathname = usePathname()
     return (
         <Table theme={tableTheme} hoverable>
@@ -39,11 +37,11 @@ const PersonalityInfoTable: React.FC<TableProps> = ({ data, loading, token }) =>
                 <Table.HeadCell className="p-4">
                     <Checkbox />
                 </Table.HeadCell>
-                <Table.HeadCell></Table.HeadCell>
+                <Table.HeadCell>Image</Table.HeadCell>
                 <Table.HeadCell>Name</Table.HeadCell>
-                <Table.HeadCell>Japanese Name</Table.HeadCell>
-                <Table.HeadCell>Birth information</Table.HeadCell>
-                <Table.HeadCell>Favorited by</Table.HeadCell>
+                <Table.HeadCell>Role</Table.HeadCell>
+                <Table.HeadCell>Username</Table.HeadCell>
+                <Table.HeadCell>Email</Table.HeadCell>
                 <Table.HeadCell>
                     <span className="sr-only">Action</span>
                 </Table.HeadCell>
@@ -62,11 +60,6 @@ const PersonalityInfoTable: React.FC<TableProps> = ({ data, loading, token }) =>
                 ) : (
                     // Tampilkan data jika sudah dimuat
                     data?.map((info, index) => {
-                        let onAir = new Date(info.birthdate)
-                        let day = onAir.getDate();
-                        let monthIndex = onAir.getMonth();
-                        let year = onAir.getFullYear();
-                        let formattedDate = `${day} ${monthNames[monthIndex]} ${year}`;
                         return (
                             <Table.Row key={index} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                                 <Table.Cell className="p-4">
@@ -81,10 +74,14 @@ const PersonalityInfoTable: React.FC<TableProps> = ({ data, loading, token }) =>
                                     {info.name}
                                 </Table.Cell>
                                 <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
-                                    {info.name_jp}
+                                    {info.role == "admin" ? (
+                                        <Badge theme={badgeTheme} color="success">{info.role}</Badge>
+                                    ) : (
+                                        <Badge theme={badgeTheme} color="info">{info.role}</Badge>
+                                    )}
                                 </Table.Cell>
-                                <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{`${info.birthplace} - ${formattedDate}`}</Table.Cell>
-                                <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{info.favoritedBy}</Table.Cell>
+                                <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{info.username}</Table.Cell>
+                                <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{info.email}</Table.Cell>
                                 <Table.Cell>
                                     <div className="grid grid-cols-2 gap-3">
                                         <Button href={`${pathname}/edit/${info.id}`} color='blue'>
@@ -130,4 +127,4 @@ const PersonalityInfoTable: React.FC<TableProps> = ({ data, loading, token }) =>
     )
 }
 
-export default PersonalityInfoTable
+export default UsersTable

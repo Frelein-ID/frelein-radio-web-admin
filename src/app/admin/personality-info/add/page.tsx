@@ -7,27 +7,11 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { PersonalityInfo } from '@/app/_interfaces/PersonalityInfo';
 import { createPersonalityInfo } from '@/app/_services/PersonalityServices';
 import AdminLayout from '../../adminLayout';
-
-enum Bloodtype {
-    A = "A",
-    B = "B",
-    AB = "AB",
-    O = "O"
-}
-
-type Inputs = {
-    name: string,
-    name_jp: string,
-    nickname: string,
-    birthdate: string | undefined,
-    birthplace: string,
-    bloodtype: Bloodtype,
-    description: string,
-    image: string,
-    source: string
-}
+import swal from 'sweetalert';
+import { useRouter } from 'next/navigation';
 
 const PersonalityInfoAddPage = () => {
+    const router = useRouter()
     const [token, setToken] = useState("")
     const loadTokenFromLocalStorage = (): string => {
         const token = localStorage.getItem('token') || "";
@@ -40,6 +24,7 @@ const PersonalityInfoAddPage = () => {
         setValue,
         formState: { errors },
     } = useForm<PersonalityInfo>()
+    register('birthdate', { required: true });
     useEffect(() => {
         const token = loadTokenFromLocalStorage()
         setToken(token)
@@ -48,8 +33,26 @@ const PersonalityInfoAddPage = () => {
     const onSubmit: SubmitHandler<PersonalityInfo> = async (data) => {
         const response: any = await createPersonalityInfo(data, token)
         console.log({ response })
+        if (response?.status == 200) {
+            swal({
+                title: "Success!",
+                text: "Personality data has been added",
+                icon: "success",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    router.back()
+                }
+            })
+        }
+        if (response?.status == 400) {
+            console.log(response?.data?.status)
+            swal({
+                title: "Error",
+                text: response?.data?.message,
+                icon: "error",
+            })
+        }
     }
-    register('birthdate', { required: true });
     console.log(watch())
 
     return (
@@ -57,11 +60,11 @@ const PersonalityInfoAddPage = () => {
             <div className="mb-6">
                 <h1>Add New Personality Information</h1>
                 <Breadcrumb aria-label="Default breadcrumb example">
-                    <Breadcrumb.Item href="/dashboard" icon={HiHome}>
+                    <Breadcrumb.Item href="/admin/dashboard" icon={HiHome}>
                         Dashboard
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>Personality</Breadcrumb.Item>
-                    <Breadcrumb.Item href="/personality-info">Information</Breadcrumb.Item>
+                    <Breadcrumb.Item href="/admin/personality-info">Information</Breadcrumb.Item>
                     <Breadcrumb.Item>Add new information</Breadcrumb.Item>
                 </Breadcrumb>
             </div>
@@ -96,8 +99,6 @@ const PersonalityInfoAddPage = () => {
                                     const month = (e.getMonth() + 1).toString().padStart(2, '0');
                                     const day = e.getDate().toString().padStart(2, '0');
                                     setValue('birthdate', `${year}-${month}-${day}`)
-                                    // setValue(`${year}-${month}-${day}`)
-                                    // setBirthdate(`${year}-${month}-${day}`)
                                 }
                             } />
                         </div>

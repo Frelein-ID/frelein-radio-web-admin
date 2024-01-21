@@ -18,17 +18,21 @@ const LoginPage = () => {
         handleSubmit,
         formState: { errors },
     } = useForm<Users>()
-    const saveTokenToLocalStorage = (token: string) => {
+    const saveCredentialsToLocalStorage = (token: string, id: string) => {
         localStorage.setItem('token', token);
+        localStorage.setItem('id', id);
     };
     const onSubmit: SubmitHandler<Users> = async (data) => {
         const response: any = await login(data)
-        const token: string = response.data.token
+        console.log({ response })
+        const token: string = response?.data?.data?.token
+        const id: string = response?.data?.data?.id
+        console.log({ token, id })
         // insert token to redux
         // dispatch(loginUser(token))
 
         // insert token to local storage
-        saveTokenToLocalStorage(token)
+        saveCredentialsToLocalStorage(token, id)
         router.push("/admin/dashboard")
     }
     return (

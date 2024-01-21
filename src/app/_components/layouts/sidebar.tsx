@@ -23,9 +23,10 @@ const CustomSidebar = () => {
                             <Sidebar.Item href="/admin/radio-info">Information</Sidebar.Item>
                             <Sidebar.Item href="/admin/radio-tracks">Tracks</Sidebar.Item>
                         </Sidebar.Collapse>
-                        <Sidebar.Item href="/admin/personality-info" icon={BiStar}>
-                            Personality
-                        </Sidebar.Item>
+                        <Sidebar.Collapse icon={BiStar} label="Personality">
+                            <Sidebar.Item href="/admin/personality-info">Information</Sidebar.Item>
+                            <Sidebar.Item href="/admin/personalities">Assign</Sidebar.Item>
+                        </Sidebar.Collapse>
                         <Sidebar.Item href="/admin/users" icon={BiUser}>
                             Users
                         </Sidebar.Item>

@@ -8,11 +8,11 @@ const RadioInfoAddPage = () => {
             <div className="mb-6">
                 <h1>Add New Radio Information</h1>
                 <Breadcrumb aria-label="Default breadcrumb example">
-                    <Breadcrumb.Item href="/dashboard" icon={HiHome}>
+                    <Breadcrumb.Item href="/admin/dashboard" icon={HiHome}>
                         Dashboard
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>Radio</Breadcrumb.Item>
-                    <Breadcrumb.Item href="/radio-info">Information</Breadcrumb.Item>
+                    <Breadcrumb.Item href="/admin/radio-info">Information</Breadcrumb.Item>
                     <Breadcrumb.Item>Add new information</Breadcrumb.Item>
                 </Breadcrumb>
             </div>

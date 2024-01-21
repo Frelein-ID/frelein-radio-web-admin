@@ -5,19 +5,19 @@ import { usePathname } from 'next/navigation'
 import { Breadcrumb, Button, Checkbox, CustomFlowbiteTheme, Table, TextInput } from 'flowbite-react'
 import { HiHome } from 'react-icons/hi'
 import { HiSearch } from "react-icons/hi";
-import PersonalityInfoTable from './table'
-import { PersonalityInfo } from '../../_interfaces/PersonalityInfo'
-import { getAllPersonalityInfo } from '../../_services/PersonalityServices'
+import UsersTable from './table'
 import AdminLayout from '../adminLayout'
+import { Users } from '@/app/_interfaces/Users'
+import { getAllUser } from '@/app/_services/UserServices'
 
-const PersonalityInfo = () => {
+const UsersPage = () => {
     const [token, setToken] = useState("")
     const loadTokenFromLocalStorage = (): string => {
         const token = localStorage.getItem('token') || "";
         return token
     };
     const pathname = usePathname()
-    const [personalityInfo, setPersonalityInfo] = useState<PersonalityInfo[]>([])
+    const [users, setUsers] = useState<Users[]>([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -28,8 +28,8 @@ const PersonalityInfo = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await getAllPersonalityInfo(token)
-                setPersonalityInfo(response?.data)
+                const response = await getAllUser(token)
+                setUsers(response?.data)
             } catch (error) {
                 console.log(error)
             }
@@ -39,7 +39,7 @@ const PersonalityInfo = () => {
 
     useEffect(() => {
         setLoading(false)
-    }, [personalityInfo])
+    }, [users])
 
     return (
         <AdminLayout>
@@ -61,10 +61,10 @@ const PersonalityInfo = () => {
                         <Button href={`${pathname}/add/`} color="success">Add new</Button>
                     </div>
                 </div>
-                <PersonalityInfoTable data={personalityInfo} loading={loading} token={token} />
+                <UsersTable data={users} loading={loading} token={token} />
             </div>
         </AdminLayout>
     )
 }
 
-export default PersonalityInfo
+export default UsersPage

@@ -29,8 +29,8 @@ const RadioInfoPage = () => {
     useEffect(() => {
         const fetchRadioInfo = async () => {
             try {
-                const data = await getAllRadioInfo(token)
-                setRadioInfo(data)
+                const response = await getAllRadioInfo(token)
+                setRadioInfo(response?.data)
             } catch (error) {
                 console.log(error)
             }
@@ -48,11 +48,11 @@ const RadioInfoPage = () => {
             <div className="mb-6">
                 <h1>Radio Information</h1>
                 <Breadcrumb aria-label="Default breadcrumb example">
-                    <Breadcrumb.Item href="/dashboard" icon={HiHome}>
+                    <Breadcrumb.Item href="/admin/dashboard" icon={HiHome}>
                         Dashboard
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>Radio</Breadcrumb.Item>
-                    <Breadcrumb.Item href="/radio-info">Information</Breadcrumb.Item>
+                    <Breadcrumb.Item href="/admin/radio-info">Information</Breadcrumb.Item>
                 </Breadcrumb>
             </div>
             <div className="mb-6">

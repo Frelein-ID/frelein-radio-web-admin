@@ -77,9 +77,16 @@ export const updatePersonalityInfo = async (
   }
 };
 
-export const deletePersonalityInfo = async (id: string): Promise<void> => {
+export const deletePersonalityInfo = async (
+  id: string,
+  token: string
+): Promise<void> => {
   try {
-    await axios.delete(`${baseURL}/personality-info/${id}`);
+    await axios.delete(`${baseURL}/personality-info/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   } catch (error) {
     console.log("Error deleting personality info:", error);
     throw error;
