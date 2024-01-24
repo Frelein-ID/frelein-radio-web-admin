@@ -6,6 +6,7 @@ import { Button, Checkbox, CustomFlowbiteTheme, Table, Spinner } from 'flowbite-
 import { RadioInfo } from '../../_interfaces/RadioInfo';
 import Skeleton from 'react-loading-skeleton';
 import { HiPencil, HiOutlineTrash, HiExternalLink } from "react-icons/hi";
+import moment from 'moment';
 
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
@@ -31,8 +32,8 @@ const RadioInfoTable: React.FC<TableProps> = ({ data, loading }) => {
                 </Table.HeadCell>
                 <Table.HeadCell>Image</Table.HeadCell>
                 <Table.HeadCell>Name</Table.HeadCell>
-                <Table.HeadCell>Schedule</Table.HeadCell>
-                <Table.HeadCell>Time</Table.HeadCell>
+                <Table.HeadCell>Added</Table.HeadCell>
+                <Table.HeadCell>Updated</Table.HeadCell>
                 <Table.HeadCell>Website</Table.HeadCell>
                 <Table.HeadCell>
                     <span className="sr-only">Action</span>
@@ -64,8 +65,8 @@ const RadioInfoTable: React.FC<TableProps> = ({ data, loading }) => {
                             <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
                                 {info.name} ({info.name_jp})
                             </Table.Cell>
-                            <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{info.schedule}</Table.Cell>
-                            <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{info.start_time}</Table.Cell>
+                            <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{moment(info?.createdAt).fromNow()}</Table.Cell>
+                            <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{moment(info?.updatedAt).fromNow()}</Table.Cell>
                             <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>
                                 <Button href={info.website} color='light'>
                                     <HiExternalLink className='text-gray-700' />

@@ -6,6 +6,7 @@ export interface Users {
   email: string;
   password: string;
   image: string;
+  lastLogin: Date;
   createdAt: Date;
   updatedAt: Date;
 }

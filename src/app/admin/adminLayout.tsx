@@ -9,7 +9,7 @@ const AdminLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => 
         <>
             <NextNProgress></NextNProgress>
             <Header></Header>
-            <div className="flex">
+            <div className="flex bg-gray-100 dark:bg-gray-900">
                 <aside className='min-h-screen'>
                     <CustomSidebar></CustomSidebar>
                 </aside>

@@ -9,16 +9,21 @@ import PersonalityInfoTable from './table'
 import { PersonalityInfo } from '../../_interfaces/PersonalityInfo'
 import { getAllPersonalityInfo } from '../../_services/PersonalityServices'
 import AdminLayout from '../adminLayout'
+import Lottie from 'lottie-react'
+import loadingAnimation from "@/app/_animations/loading.json"
+
 
 const PersonalityInfo = () => {
+    const pathname = usePathname()
+    const [isLoading, setIsLoading] = useState(true)
+
     const [token, setToken] = useState("")
     const loadTokenFromLocalStorage = (): string => {
         const token = localStorage.getItem('token') || "";
         return token
     };
-    const pathname = usePathname()
+
     const [personalityInfo, setPersonalityInfo] = useState<PersonalityInfo[]>([])
-    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const token = loadTokenFromLocalStorage()
@@ -29,40 +34,46 @@ const PersonalityInfo = () => {
         const fetchData = async () => {
             try {
                 const response = await getAllPersonalityInfo(token)
-                setPersonalityInfo(response?.data)
+                setPersonalityInfo(response)
             } catch (error) {
                 console.log(error)
+            } finally {
+                setIsLoading(false)
             }
         }
         fetchData()
     }, [token])
 
-    useEffect(() => {
-        setLoading(false)
-    }, [personalityInfo])
-
     return (
         <AdminLayout>
-            <div className="mb-6">
-                <h1>Personality Information</h1>
-                <Breadcrumb aria-label="Personality info breadcrumbs">
-                    <Breadcrumb.Item href="/admin/dashboard" icon={HiHome}>
-                        Dashboard
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item>Personality</Breadcrumb.Item>
-                    <Breadcrumb.Item href="/admin/personality-info">Information</Breadcrumb.Item>
-                </Breadcrumb>
-            </div>
-            <div className="mb-6">
-                <div className='p-4 flex flex-row justify-between items-center bg-white dark:bg-gray-800 rounded-tl-lg rounded-tr-lg'>
-                    <TextInput id="search-table" type="text" icon={HiSearch} placeholder="Search here..." />
-                    <div className="grid grid-cols-2 gap-3">
-                        <Button color="failure">Delete selected</Button>
-                        <Button href={`${pathname}/add/`} color="success">Add new</Button>
-                    </div>
+            {isLoading ? (
+                <div className='w-full h-full flex justify-center items-center'>
+                    <Lottie animationData={loadingAnimation} />
                 </div>
-                <PersonalityInfoTable data={personalityInfo} loading={loading} token={token} />
-            </div>
+            ) : (
+                <>
+                    <div className="mb-6">
+                        <h1>Personality Information</h1>
+                        <Breadcrumb aria-label="Personality info breadcrumbs">
+                            <Breadcrumb.Item href="/admin/dashboard" icon={HiHome}>
+                                Dashboard
+                            </Breadcrumb.Item>
+                            <Breadcrumb.Item>Personality</Breadcrumb.Item>
+                            <Breadcrumb.Item href="/admin/personality-info">Information</Breadcrumb.Item>
+                        </Breadcrumb>
+                    </div>
+                    <div className="mb-6">
+                        <div className='p-4 flex flex-row justify-between items-center bg-white dark:bg-gray-800 rounded-tl-lg rounded-tr-lg'>
+                            <TextInput id="search-table" type="text" icon={HiSearch} placeholder="Search here..." />
+                            <div className="grid grid-cols-2 gap-3">
+                                <Button color="failure">Delete selected</Button>
+                                <Button href={`${pathname}/add/`} color="success">Add new</Button>
+                            </div>
+                        </div>
+                        <PersonalityInfoTable data={personalityInfo?.data} loading={isLoading} token={token} />
+                    </div>
+                </>
+            )}
         </AdminLayout>
     )
 }

@@ -6,33 +6,26 @@ import Link from 'next/link'
 import { useForm, SubmitHandler } from "react-hook-form"
 import { login } from '../_services/AuthServices'
 import { Users } from '../_interfaces/Users'
-import { useDispatch } from 'react-redux'
-import { loginUser } from '../redux/features/auth'
 import { useRouter } from 'next/navigation'
 
 const LoginPage = () => {
     const router = useRouter()
-    const dispatch = useDispatch()
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<Users>()
-    const saveCredentialsToLocalStorage = (token: string, id: string) => {
+    const saveCredentialsToLocalStorage = (token: string, userId: string) => {
         localStorage.setItem('token', token);
-        localStorage.setItem('id', id);
+        localStorage.setItem('userId', userId);
     };
     const onSubmit: SubmitHandler<Users> = async (data) => {
         const response: any = await login(data)
         console.log({ response })
-        const token: string = response?.data?.data?.token
-        const id: string = response?.data?.data?.id
-        console.log({ token, id })
-        // insert token to redux
-        // dispatch(loginUser(token))
-
-        // insert token to local storage
-        saveCredentialsToLocalStorage(token, id)
+        const token: string = response?.data?.token
+        const userId: string = response?.data?.id
+        console.log({ token, userId })
+        saveCredentialsToLocalStorage(token, userId)
         router.push("/admin/dashboard")
     }
     return (

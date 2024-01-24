@@ -10,4 +10,6 @@ export interface RadioTracks {
   radio_image: string;
   track_image: string;
   src: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

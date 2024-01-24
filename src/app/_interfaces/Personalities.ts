@@ -3,4 +3,6 @@ export interface Personalities {
   name_jp: string;
   nickname: string;
   image: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

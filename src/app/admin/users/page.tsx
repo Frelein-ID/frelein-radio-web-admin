@@ -44,13 +44,13 @@ const UsersPage = () => {
     return (
         <AdminLayout>
             <div className="mb-6">
-                <h1>Personality Information</h1>
-                <Breadcrumb aria-label="Personality info breadcrumbs">
+                <h1>Users Information</h1>
+                <Breadcrumb aria-label="Users information breadcrumbs">
                     <Breadcrumb.Item href="/admin/dashboard" icon={HiHome}>
                         Dashboard
                     </Breadcrumb.Item>
-                    <Breadcrumb.Item>Personality</Breadcrumb.Item>
-                    <Breadcrumb.Item href="/admin/personality-info">Information</Breadcrumb.Item>
+                    <Breadcrumb.Item>Users</Breadcrumb.Item>
+                    <Breadcrumb.Item href="/admin/users">Users</Breadcrumb.Item>
                 </Breadcrumb>
             </div>
             <div className="mb-6">

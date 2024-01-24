@@ -8,6 +8,7 @@ import { HiPencil, HiOutlineTrash } from "react-icons/hi";
 import swal from 'sweetalert';
 import { WARNING_SUBTITLE, WARNING_TITLE } from '@/app/_constants/constants';
 import { Users } from '@/app/_interfaces/Users';
+import moment from "moment"
 
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
@@ -42,6 +43,7 @@ const UsersTable: React.FC<TableProps> = ({ data, loading, token }) => {
                 <Table.HeadCell>Role</Table.HeadCell>
                 <Table.HeadCell>Username</Table.HeadCell>
                 <Table.HeadCell>Email</Table.HeadCell>
+                <Table.HeadCell>Last login</Table.HeadCell>
                 <Table.HeadCell>
                     <span className="sr-only">Action</span>
                 </Table.HeadCell>
@@ -82,6 +84,7 @@ const UsersTable: React.FC<TableProps> = ({ data, loading, token }) => {
                                 </Table.Cell>
                                 <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{info.username}</Table.Cell>
                                 <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{info.email}</Table.Cell>
+                                <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{info?.lastLogin ? moment(info.lastLogin).fromNow() : "Unknown"}</Table.Cell>
                                 <Table.Cell>
                                     <div className="grid grid-cols-2 gap-3">
                                         <Button href={`${pathname}/edit/${info.id}`} color='blue'>

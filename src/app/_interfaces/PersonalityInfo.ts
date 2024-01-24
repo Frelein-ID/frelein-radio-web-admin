@@ -11,4 +11,6 @@ export interface PersonalityInfo {
   image: string;
   source: string;
   favoritedBy: number;
+  createdAt: Date;
+  updatedAt: Date;
 }

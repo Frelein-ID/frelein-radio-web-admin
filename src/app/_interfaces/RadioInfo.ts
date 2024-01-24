@@ -8,4 +8,6 @@ export interface RadioInfo {
   social: string;
   schedule: string;
   start_time: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

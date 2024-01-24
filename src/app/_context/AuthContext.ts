@@ -1,50 +1,52 @@
-// src/context/AuthContext.tsx
-import React, { createContext, useContext, ReactNode } from "react";
-import { useSelector } from "react-redux";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { getAdminData } from "../_services/AdminServices";
+import { Users } from "../_interfaces/Users";
 
-// Definisikan tipe data untuk konteks otentikasi
 interface AuthContextProps {
-  isAuthenticated: boolean;
+  user: Users | null;
   token: string | null;
-  login: (credentials: any) => void;
-  logout: () => void;
 }
 
 // Buat konteks otentikasi dengan nilai default
 const AuthContext = createContext<AuthContextProps>({
-  isAuthenticated: false,
-  token: null,
-  login: () => {},
-  logout: () => {},
+  user = null,
+  token = null,
 });
 
-// Komponen penyedia otentikasi
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  // Menggunakan useSelector untuk mengakses state dari Redux
-  const isAuthenticated = useSelector(
-    (state: any) => state.auth.isAuthenticated
-  );
-  const token = useSelector((state: any) => state.auth.token);
+const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<any>(null);
+  const [token, setToken] = useState("");
+  const [userId, setUserId] = useState("");
 
-  // Ambil aksi login dan logout dari Redux
-  const login = (credentials: any) => {
-    // Dispatch aksi login dari Redux
-    // Misalnya, menggunakan useDispatch untuk memanggil aksi login dari Redux
+  const loadDataFromLocalStorage = (data: string): string => {
+    return localStorage.getItem(data) || "";
   };
 
-  const logout = () => {
-    // Dispatch aksi logout dari Redux
-    // Misalnya, menggunakan useDispatch untuk memanggil aksi logout dari Redux
-  };
+  useEffect(() => {
+    setToken(loadDataFromLocalStorage("token"));
+    setUserId(loadDataFromLocalStorage("userId"));
+  }, []);
+
+  useEffect(() => {
+    try {
+      await getAdminData(token, userId).then((value) => {
+        return setUser(value);
+      });
+    } catch (error) {
+      console.log({ error });
+    }
+  }, [token, userId]);
 
   // Nilai konteks yang akan disediakan kepada komponen anak
   const contextValue: AuthContextProps = {
-    isAuthenticated,
+    user,
     token,
-    login,
-    logout,
   };
 
   return (

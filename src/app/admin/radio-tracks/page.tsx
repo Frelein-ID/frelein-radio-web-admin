@@ -8,6 +8,7 @@ import { RadioTracks } from '../../_interfaces/RadioTracks'
 import { getAllRadioTracks } from '../../_services/RadioTracksServices'
 import { HiSearch, HiPencil, HiOutlineTrash } from "react-icons/hi";
 import AdminLayout from '../adminLayout'
+import moment from 'moment';
 
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
@@ -85,6 +86,8 @@ const RadioTracks = () => {
                         <Table.HeadCell>Episode</Table.HeadCell>
                         <Table.HeadCell>On Air</Table.HeadCell>
                         <Table.HeadCell>Personalities</Table.HeadCell>
+                        <Table.HeadCell>Added</Table.HeadCell>
+                        <Table.HeadCell>Updated</Table.HeadCell>
                         <Table.HeadCell>
                             <span className="sr-only">Action</span>
                         </Table.HeadCell>
@@ -115,6 +118,8 @@ const RadioTracks = () => {
                                         <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{tracks.episode}</Table.Cell>
                                         <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{formattedDate}</Table.Cell>
                                         <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{personalities_name_final}</Table.Cell>
+                                        <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{moment(tracks?.createdAt).fromNow()}</Table.Cell>
+                                        <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{moment(tracks?.updatedAt).fromNow()}</Table.Cell>
                                         <Table.Cell>
                                             <div className="grid grid-cols-2 gap-3">
                                                 <Button href={`${pathname}/edit/${tracks.id}`} color='blue'>

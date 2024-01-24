@@ -18,6 +18,8 @@ const RootLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   return (
     <html lang="en">
       <head>
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="http://localhost:8097"></script>
         <ThemeModeScript></ThemeModeScript>
       </head>
       <body className={montserrat.className}>
