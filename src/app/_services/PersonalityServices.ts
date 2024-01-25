@@ -27,7 +27,7 @@ export const getPersonalityInfoByID = async (
   token: string
 ): Promise<PersonalityInfo> => {
   try {
-    const response = await axios.post(`${baseURL}/personality-info/${id}`, {
+    const response = await axios.get(`${baseURL}/personality-info/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

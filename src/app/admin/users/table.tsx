@@ -18,16 +18,62 @@ const tableTheme: CustomFlowbiteTheme['table'] = {
     }
 }
 
+const badgeTheme: CustomFlowbiteTheme['badge'] = {
+    "root": {
+        "base": "flex h-fit justify-center items-center gap-1 font-semibold uppercase",
+    },
+}
+
 interface TableProps {
     data: Users[] | null;
     loading: boolean;
     token: string
 }
 
-const badgeTheme: CustomFlowbiteTheme['badge'] = {
-    "root": {
-        "base": "flex h-fit justify-center items-center gap-1 font-semibold uppercase",
-    },
+interface TableRowProps {
+    info: Users,
+    pathname: string,
+}
+
+
+const TableRow = (
+    data: TableRowProps
+) => {
+    return (
+        <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+            <Table.Cell className="p-4">
+                <Checkbox />
+            </Table.Cell>
+            <Table.Cell>
+                <div className='max-w-12 aspect-square overflow-hidden rounded-full'>
+                    <img className='w-full h-auto object-cover' src={data.info.image} title={data.info.name} alt={data.info.name} />
+                </div>
+            </Table.Cell>
+            <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
+                {data.info.name}
+            </Table.Cell>
+            <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
+                {data.info.role == "admin" ? (
+                    <Badge theme={badgeTheme} color="success">{data.info.role}</Badge>
+                ) : (
+                    <Badge theme={badgeTheme} color="info">{data.info.role}</Badge>
+                )}
+            </Table.Cell>
+            <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{data.info.username}</Table.Cell>
+            <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{data.info.email}</Table.Cell>
+            <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{data.info?.lastLogin ? moment(data.info.lastLogin).fromNow() : "Unknown"}</Table.Cell>
+            <Table.Cell>
+                <Button href={`${data.pathname}/edit/${data.info.id}`} color='blue'>
+                    <HiPencil className='text-white' />
+                </Button>
+            </Table.Cell>
+            <Table.Cell>
+                <Button color='failure' >
+                    <HiOutlineTrash className='text-white' />
+                </Button>
+            </Table.Cell>
+        </Table.Row>
+    )
 }
 
 const UsersTable: React.FC<TableProps> = ({ data, loading, token }) => {
@@ -45,86 +91,18 @@ const UsersTable: React.FC<TableProps> = ({ data, loading, token }) => {
                 <Table.HeadCell>Email</Table.HeadCell>
                 <Table.HeadCell>Last login</Table.HeadCell>
                 <Table.HeadCell>
-                    <span className="sr-only">Action</span>
+                    <span className="sr-only">Action Edit</span>
+                </Table.HeadCell>
+                <Table.HeadCell>
+                    <span className="sr-only">Action Delete</span>
                 </Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
-                {loading ? (
-                    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                        <Table.Cell></Table.Cell>
-                        <Table.Cell><Skeleton /></Table.Cell>
-                        <Table.Cell><Skeleton /></Table.Cell>
-                        <Table.Cell><Skeleton /></Table.Cell>
-                        <Table.Cell><Skeleton /></Table.Cell>
-                        <Table.Cell><Skeleton /></Table.Cell>
-                        <Table.Cell><Skeleton /></Table.Cell>
-                    </Table.Row>
-                ) : (
-                    // Tampilkan data jika sudah dimuat
-                    data?.map((info, index) => {
-                        return (
-                            <Table.Row key={index} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                                <Table.Cell className="p-4">
-                                    <Checkbox />
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <div className='max-w-12 aspect-square overflow-hidden rounded-full'>
-                                        <img className='w-full h-auto object-cover' src={info.image} title={info.name} alt={info.name} />
-                                    </div>
-                                </Table.Cell>
-                                <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
-                                    {info.name}
-                                </Table.Cell>
-                                <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
-                                    {info.role == "admin" ? (
-                                        <Badge theme={badgeTheme} color="success">{info.role}</Badge>
-                                    ) : (
-                                        <Badge theme={badgeTheme} color="info">{info.role}</Badge>
-                                    )}
-                                </Table.Cell>
-                                <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{info.username}</Table.Cell>
-                                <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{info.email}</Table.Cell>
-                                <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{info?.lastLogin ? moment(info.lastLogin).fromNow() : "Unknown"}</Table.Cell>
-                                <Table.Cell>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <Button href={`${pathname}/edit/${info.id}`} color='blue'>
-                                            <HiPencil className='text-white' />
-                                        </Button>
-                                        <Button color='failure' onClick={() => {
-                                            swal({
-                                                title: WARNING_TITLE,
-                                                text: WARNING_SUBTITLE,
-                                                icon: "warning",
-                                                dangerMode: true,
-                                            })
-                                                .then(async (willDelete) => {
-                                                    if (willDelete) {
-                                                        // const response: any = await deletePersonalityInfo(info.id, token)
-                                                        // if (response?.status == 200) {
-                                                        //     swal({
-                                                        //         title: "Success!",
-                                                        //         text: response?.message,
-                                                        //         icon: "success",
-                                                        //     })
-                                                        // } else {
-                                                        //     swal({
-                                                        //         title: "Error",
-                                                        //         text: response?.message,
-                                                        //         icon: "error",
-                                                        //     })
-                                                        // }
-                                                    }
-                                                });
-                                        }}>
-                                            <HiOutlineTrash className='text-white' />
-                                        </Button>
-                                    </div>
-                                </Table.Cell>
-                            </Table.Row>
-                        )
-                    })
-                )}
-
+                {data?.map((info, index) => {
+                    return (
+                        <TableRow key={index} info={info} pathname={pathname} />
+                    )
+                })}
             </Table.Body>
         </Table>
     )

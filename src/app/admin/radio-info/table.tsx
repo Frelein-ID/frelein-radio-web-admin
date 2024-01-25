@@ -4,7 +4,6 @@ import React from 'react'
 import { usePathname } from 'next/navigation'
 import { Button, Checkbox, CustomFlowbiteTheme, Table, Spinner } from 'flowbite-react'
 import { RadioInfo } from '../../_interfaces/RadioInfo';
-import Skeleton from 'react-loading-skeleton';
 import { HiPencil, HiOutlineTrash, HiExternalLink } from "react-icons/hi";
 import moment from 'moment';
 
@@ -17,12 +16,53 @@ const tableTheme: CustomFlowbiteTheme['table'] = {
 }
 
 interface TableProps {
-    data: RadioInfo[] | null;
-    loading: boolean;
+    data: RadioInfo[] | null
 }
 
+interface TableRowProps {
+    pathname: string,
+    info: RadioInfo
+}
 
-const RadioInfoTable: React.FC<TableProps> = ({ data, loading }) => {
+const TableRow = (
+    data: TableRowProps
+) => {
+    return (
+        <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+            <Table.Cell className="p-4">
+                <Checkbox />
+            </Table.Cell>
+            <Table.Cell>
+                <div className='max-w-16 aspect-square overflow-hidden rounded-lg'>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img className='w-full h-auto object-cover' src={data.info.image} title={data.info.name} alt={data.info.name} />
+                </div>
+            </Table.Cell>
+            <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
+                {data.info.name} ({data.info.name_jp})
+            </Table.Cell>
+            <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{moment(data.info?.createdAt).fromNow()}</Table.Cell>
+            <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{moment(data.info?.updatedAt).fromNow()}</Table.Cell>
+            <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>
+                <Button href={data.info.website} color='light'>
+                    <HiExternalLink className='text-gray-700' />
+                </Button>
+            </Table.Cell>
+            <Table.Cell>
+                <Button href={`${data.pathname}/edit/${data.info.id}`} color='blue'>
+                    <HiPencil className='text-white' />
+                </Button>
+            </Table.Cell>
+            <Table.Cell>
+                <Button href={`${data.pathname}/delete/${data.info.id}`} color='failure'>
+                    <HiOutlineTrash className='text-white' />
+                </Button>
+            </Table.Cell>
+        </Table.Row>
+    )
+}
+
+const RadioInfoTable: React.FC<TableProps> = ({ data }) => {
     const pathname = usePathname()
     return (
         <Table theme={tableTheme} hoverable>
@@ -36,56 +76,16 @@ const RadioInfoTable: React.FC<TableProps> = ({ data, loading }) => {
                 <Table.HeadCell>Updated</Table.HeadCell>
                 <Table.HeadCell>Website</Table.HeadCell>
                 <Table.HeadCell>
-                    <span className="sr-only">Action</span>
+                    <span className="sr-only">Action Edit</span>
+                </Table.HeadCell>
+                <Table.HeadCell>
+                    <span className="sr-only">Action Delete</span>
                 </Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
-                {loading ? (
-                    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                        <Table.Cell></Table.Cell>
-                        <Table.Cell><Skeleton count={2} /></Table.Cell>
-                        <Table.Cell><Skeleton /></Table.Cell>
-                        <Table.Cell><Skeleton /></Table.Cell>
-                        <Table.Cell><Skeleton /></Table.Cell>
-                        <Table.Cell><Skeleton /></Table.Cell>
-                        <Table.Cell><Skeleton /></Table.Cell>
-                    </Table.Row>
-                ) : (
-                    // Tampilkan data jika sudah dimuat
-                    data?.map((info, index) => (
-                        <Table.Row key={index} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                            <Table.Cell className="p-4">
-                                <Checkbox />
-                            </Table.Cell>
-                            <Table.Cell>
-                                <div className='max-w-16 aspect-square overflow-hidden rounded-lg'>
-                                    <img className='w-full h-auto object-cover' src={info.image} title={info.name} alt={info.name} />
-                                </div>
-                            </Table.Cell>
-                            <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
-                                {info.name} ({info.name_jp})
-                            </Table.Cell>
-                            <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{moment(info?.createdAt).fromNow()}</Table.Cell>
-                            <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{moment(info?.updatedAt).fromNow()}</Table.Cell>
-                            <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>
-                                <Button href={info.website} color='light'>
-                                    <HiExternalLink className='text-gray-700' />
-                                </Button>
-                            </Table.Cell>
-                            <Table.Cell>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <Button href={`${pathname}/edit/${info.id}`} color='blue'>
-                                        <HiPencil className='text-white' />
-                                    </Button>
-                                    <Button href={`${pathname}/delete/${info.id}`} color='failure'>
-                                        <HiOutlineTrash className='text-white' />
-                                    </Button>
-                                </div>
-                            </Table.Cell>
-                        </Table.Row>
-                    ))
-                )}
-
+                {data?.map((info, index) => (
+                    <TableRow key={index} pathname={pathname} info={info} />
+                ))}
             </Table.Body>
         </Table>
     )

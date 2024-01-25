@@ -8,7 +8,7 @@ import { RadioTracks } from '../../_interfaces/RadioTracks'
 import { getAllRadioTracks } from '../../_services/RadioTracksServices'
 import { HiSearch, HiPencil, HiOutlineTrash } from "react-icons/hi";
 import AdminLayout from '../adminLayout'
-import moment from 'moment';
+import RadioTracksTable from './table'
 
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
@@ -60,6 +60,8 @@ const RadioTracks = () => {
         <AdminLayout>
             <div className="mb-6">
                 <h1>Radio Tracks</h1>
+            </div>
+            <div className="mb-6">
                 <Breadcrumb aria-label="Default breadcrumb example">
                     <Breadcrumb.Item href="/admin/dashboard" icon={HiHome}>
                         Dashboard
@@ -76,69 +78,11 @@ const RadioTracks = () => {
                         <Button href={`${pathname}/add/`} color="success">Add new</Button>
                     </div>
                 </div>
-                <Table theme={tableTheme} hoverable>
-                    <Table.Head>
-                        <Table.HeadCell className="p-4">
-                            <Checkbox />
-                        </Table.HeadCell>
-                        <Table.HeadCell>Image</Table.HeadCell>
-                        <Table.HeadCell>Name</Table.HeadCell>
-                        <Table.HeadCell>Episode</Table.HeadCell>
-                        <Table.HeadCell>On Air</Table.HeadCell>
-                        <Table.HeadCell>Personalities</Table.HeadCell>
-                        <Table.HeadCell>Added</Table.HeadCell>
-                        <Table.HeadCell>Updated</Table.HeadCell>
-                        <Table.HeadCell>
-                            <span className="sr-only">Action</span>
-                        </Table.HeadCell>
-                    </Table.Head>
-                    <Table.Body className="divide-y">
-                        {radioTracks && (
-                            radioTracks.map((tracks, index) => {
-                                let onAir = new Date(tracks.radio_oa)
-                                let day = onAir.getDate();
-                                let monthIndex = onAir.getMonth();
-                                let year = onAir.getFullYear();
-                                let formattedDate = `${day} ${monthNames[monthIndex]} ${year}`;
-                                let personalities_name = tracks.personalities.map(person => person.name)
-                                let personalities_name_final = personalities_name.join(', ')
-                                return (
-                                    <Table.Row key={index} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                                        <Table.Cell className="p-4">
-                                            <Checkbox />
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                            <div className='max-w-16 aspect-square overflow-hidden rounded-lg'>
-                                                <img className='w-full h-auto object-cover' src={tracks.track_image} title={tracks.name} alt={tracks.name} />
-                                            </div>
-                                        </Table.Cell>
-                                        <Table.Cell className="max-w-40 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
-                                            {tracks.name} ({tracks.name_jp})
-                                        </Table.Cell>
-                                        <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{tracks.episode}</Table.Cell>
-                                        <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{formattedDate}</Table.Cell>
-                                        <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{personalities_name_final}</Table.Cell>
-                                        <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{moment(tracks?.createdAt).fromNow()}</Table.Cell>
-                                        <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{moment(tracks?.updatedAt).fromNow()}</Table.Cell>
-                                        <Table.Cell>
-                                            <div className="grid grid-cols-2 gap-3">
-                                                <Button href={`${pathname}/edit/${tracks.id}`} color='blue'>
-                                                    <HiPencil className='text-white' />
-                                                </Button>
-                                                <Button href={`${pathname}/delete/${tracks.id}`} color='failure'>
-                                                    <HiOutlineTrash className='text-white' />
-                                                </Button>
-                                            </div>
-                                        </Table.Cell>
-                                    </Table.Row>
-                                )
-                            })
-                        )}
-
-                    </Table.Body>
-                </Table>
+                <div className="overflow-scroll">
+                    <RadioTracksTable data={radioTracks} />
+                </div>
             </div>
-        </AdminLayout>
+        </AdminLayout >
     )
 }
 

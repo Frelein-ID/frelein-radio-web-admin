@@ -34,7 +34,7 @@ const PersonalityInfo = () => {
         const fetchData = async () => {
             try {
                 const response = await getAllPersonalityInfo(token)
-                setPersonalityInfo(response)
+                setPersonalityInfo(response?.data)
             } catch (error) {
                 console.log(error)
             } finally {
@@ -70,7 +70,7 @@ const PersonalityInfo = () => {
                                 <Button href={`${pathname}/add/`} color="success">Add new</Button>
                             </div>
                         </div>
-                        <PersonalityInfoTable data={personalityInfo?.data} loading={isLoading} token={token} />
+                        <PersonalityInfoTable data={personalityInfo} loading={isLoading} token={token} />
                     </div>
                 </>
             )}

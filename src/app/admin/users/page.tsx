@@ -45,6 +45,8 @@ const UsersPage = () => {
         <AdminLayout>
             <div className="mb-6">
                 <h1>Users Information</h1>
+            </div>
+            <div className="mb-6">
                 <Breadcrumb aria-label="Users information breadcrumbs">
                     <Breadcrumb.Item href="/admin/dashboard" icon={HiHome}>
                         Dashboard
@@ -61,7 +63,9 @@ const UsersPage = () => {
                         <Button href={`${pathname}/add/`} color="success">Add new</Button>
                     </div>
                 </div>
-                <UsersTable data={users} loading={loading} token={token} />
+                <div className="overflow-scroll">
+                    <UsersTable data={users} loading={loading} token={token} />
+                </div>
             </div>
         </AdminLayout>
     )

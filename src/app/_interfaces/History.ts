@@ -1,6 +1,6 @@
 export interface History {
   id: string;
-  users_id: string;
+  users: object;
   endpoint: string;
   action: string;
   dataBefore: JSON;

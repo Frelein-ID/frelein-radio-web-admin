@@ -47,6 +47,8 @@ const RadioInfoPage = () => {
         <AdminLayout>
             <div className="mb-6">
                 <h1>Radio Information</h1>
+            </div>
+            <div className="mb-6">
                 <Breadcrumb aria-label="Default breadcrumb example">
                     <Breadcrumb.Item href="/admin/dashboard" icon={HiHome}>
                         Dashboard
@@ -63,7 +65,9 @@ const RadioInfoPage = () => {
                         <Button href={`${pathname}/add/`} color="success">Add new</Button>
                     </div>
                 </div>
-                <RadioInfoTable data={radioInfo} loading={loading} />
+                <div className="overflow-scroll">
+                    <RadioInfoTable data={radioInfo} />
+                </div>
             </div>
         </AdminLayout>
     )
