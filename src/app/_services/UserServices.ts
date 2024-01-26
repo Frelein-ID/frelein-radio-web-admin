@@ -1,6 +1,7 @@
 import "dotenv/config";
 import axios from "axios";
 import { Users } from "../_interfaces/Users";
+import { Response } from "../_interfaces/Response";
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
@@ -21,7 +22,7 @@ export const getUserByID = async (
   }
 };
 
-export const getAllUser = async (token: string): Promise<Users[]> => {
+export const getAllUser = async (token: string): Promise<Response> => {
   try {
     const response = await axios.get(`${baseURL}/user`, {
       headers: {

@@ -62,15 +62,17 @@ const PersonalityInfo = () => {
                             <Breadcrumb.Item href="/admin/personality-info">Information</Breadcrumb.Item>
                         </Breadcrumb>
                     </div>
-                    <div className="mb-6">
-                        <div className='p-4 flex flex-row justify-between items-center bg-white dark:bg-gray-800 rounded-tl-lg rounded-tr-lg'>
+                    <div className="mb-6 rounded-lg relative overflow-hidden">
+                        <div className='p-4 flex flex-row justify-between items-center bg-white dark:bg-gray-800'>
                             <TextInput id="search-table" type="text" icon={HiSearch} placeholder="Search here..." />
                             <div className="grid grid-cols-2 gap-3">
                                 <Button color="failure">Delete selected</Button>
                                 <Button href={`${pathname}/add/`} color="success">Add new</Button>
                             </div>
                         </div>
-                        <PersonalityInfoTable data={personalityInfo} loading={isLoading} token={token} />
+                        <div className="overflow-scroll">
+                            <PersonalityInfoTable data={personalityInfo} loading={isLoading} token={token} />
+                        </div>
                     </div>
                 </>
             )}

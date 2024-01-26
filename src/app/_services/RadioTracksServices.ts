@@ -1,6 +1,7 @@
 import "dotenv/config";
 import axios from "axios";
 import { RadioTracks } from "../_interfaces/RadioTracks";
+import { Response } from "../_interfaces/Response";
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
@@ -21,9 +22,7 @@ export const createRadioTracks = async (
   }
 };
 
-export const getAllRadioTracks = async (
-  token: string
-): Promise<RadioTracks[]> => {
+export const getAllRadioTracks = async (token: string): Promise<Response> => {
   try {
     const response = await axios.get(`${baseURL}/radio-tracks`, {
       headers: {

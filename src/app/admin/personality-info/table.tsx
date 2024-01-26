@@ -9,6 +9,8 @@ import swal from 'sweetalert';
 import { WARNING_SUBTITLE, WARNING_TITLE } from '@/app/_constants/constants';
 import moment from 'moment';
 import { deletePersonalityInfo } from '@/app/_services/PersonalityServices';
+import Lottie from 'lottie-react';
+import emptyAnimation from "@/app/_animations/empty.json"
 
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
@@ -97,29 +99,36 @@ const handleDelete = (
 const PersonalityInfoTable: React.FC<TableProps> = ({ data, loading, token }) => {
     const pathname = usePathname()
     return (
-        <Table theme={tableTheme} hoverable>
+        <Table theme={tableTheme}>
             <Table.Head>
                 <Table.HeadCell className="p-4">
                     <Checkbox />
                 </Table.HeadCell>
-                <Table.HeadCell></Table.HeadCell>
+                <Table.HeadCell>Image</Table.HeadCell>
                 <Table.HeadCell>Name</Table.HeadCell>
                 <Table.HeadCell>Favorited by</Table.HeadCell>
                 <Table.HeadCell>Added</Table.HeadCell>
                 <Table.HeadCell>Updated</Table.HeadCell>
-                <Table.HeadCell>
-                    <span className="sr-only">Action Edit</span>
-                </Table.HeadCell>
-                <Table.HeadCell>
-                    <span className="sr-only">Action Delete</span>
-                </Table.HeadCell>
+                <Table.HeadCell colSpan={2}>Action</Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
-                {data?.map((info, index) => {
-                    return (
-                        <TableRow key={index} pathname={pathname} info={info} token={token} />
-                    )
-                })}
+                {data?.length != 0 ? (
+                    data?.map((info, index) => {
+                        return (
+                            <TableRow key={index} pathname={pathname} info={info} token={token} />
+                        )
+                    })
+                ) : (
+                    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                        <Table.Cell colSpan={8}>
+                            <div className="flex flex-col text-center justify-center items-center">
+                                <Lottie className='w-96 h-96' animationData={emptyAnimation} />
+                                <h3 className='mb-3'>Not Found</h3>
+                            </div>
+                        </Table.Cell>
+                    </Table.Row>
+                )}
+
             </Table.Body>
         </Table>
     )

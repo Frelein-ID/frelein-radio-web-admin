@@ -9,6 +9,7 @@ import { createPersonalityInfo } from '@/app/_services/PersonalityServices';
 import AdminLayout from '../../adminLayout';
 import swal from 'sweetalert';
 import { useRouter } from 'next/navigation';
+import { Response } from '@/app/_interfaces/Response';
 
 const PersonalityInfoAddPage = () => {
     const router = useRouter()
@@ -31,9 +32,9 @@ const PersonalityInfoAddPage = () => {
         console.log(token)
     }, [])
     const onSubmit: SubmitHandler<PersonalityInfo> = async (data) => {
-        const response: any = await createPersonalityInfo(data, token)
+        const response: Response = await createPersonalityInfo(data, token)
         console.log({ response })
-        if (response?.status == 200) {
+        if (response?.status == 201) {
             swal({
                 title: "Success!",
                 text: "Personality data has been added",
@@ -45,10 +46,10 @@ const PersonalityInfoAddPage = () => {
             })
         }
         if (response?.status == 400) {
-            console.log(response?.data?.status)
+            console.log(response?.status)
             swal({
                 title: "Error",
-                text: response?.data?.message,
+                text: response?.message,
                 icon: "error",
             })
         }
@@ -59,6 +60,8 @@ const PersonalityInfoAddPage = () => {
         <AdminLayout>
             <div className="mb-6">
                 <h1>Add New Personality Information</h1>
+            </div>
+            <div className="mb-6">
                 <Breadcrumb aria-label="Default breadcrumb example">
                     <Breadcrumb.Item href="/admin/dashboard" icon={HiHome}>
                         Dashboard

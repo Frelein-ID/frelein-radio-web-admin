@@ -9,6 +9,8 @@ import swal from 'sweetalert';
 import { WARNING_SUBTITLE, WARNING_TITLE } from '@/app/_constants/constants';
 import { Users } from '@/app/_interfaces/Users';
 import moment from "moment"
+import Lottie from 'lottie-react';
+import emptyAnimation from "@/app/_animations/empty.json"
 
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
@@ -26,7 +28,6 @@ const badgeTheme: CustomFlowbiteTheme['badge'] = {
 
 interface TableProps {
     data: Users[] | null;
-    loading: boolean;
     token: string
 }
 
@@ -46,7 +47,16 @@ const TableRow = (
             </Table.Cell>
             <Table.Cell>
                 <div className='max-w-12 aspect-square overflow-hidden rounded-full'>
-                    <img className='w-full h-auto object-cover' src={data.info.image} title={data.info.name} alt={data.info.name} />
+                    {data?.info?.image != null ? (
+                        <>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img className='w-full h-auto object-cover' src={data.info.image} title={data.info.name} alt={data.info.name} />
+                        </>
+                    ) : (
+                        <div className='flex justify-center items-center w-full h-full object-cover bg-gray-100 dark:bg-gray-700 text-lg font-bold'>
+                            {Array.from(data?.info?.name)[0]}
+                        </div>
+                    )}
                 </div>
             </Table.Cell>
             <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
@@ -54,9 +64,9 @@ const TableRow = (
             </Table.Cell>
             <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
                 {data.info.role == "admin" ? (
-                    <Badge theme={badgeTheme} color="success">{data.info.role}</Badge>
+                    <Badge theme={badgeTheme} color="success">{data.info.role || <Skeleton />}</Badge>
                 ) : (
-                    <Badge theme={badgeTheme} color="info">{data.info.role}</Badge>
+                    <Badge theme={badgeTheme} color="info">{data.info.role || <Skeleton />}</Badge>
                 )}
             </Table.Cell>
             <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{data.info.username}</Table.Cell>
@@ -76,10 +86,10 @@ const TableRow = (
     )
 }
 
-const UsersTable: React.FC<TableProps> = ({ data, loading, token }) => {
+const UsersTable: React.FC<TableProps> = ({ data, token }) => {
     const pathname = usePathname()
     return (
-        <Table theme={tableTheme} hoverable>
+        <Table theme={tableTheme}>
             <Table.Head>
                 <Table.HeadCell className="p-4">
                     <Checkbox />
@@ -90,19 +100,25 @@ const UsersTable: React.FC<TableProps> = ({ data, loading, token }) => {
                 <Table.HeadCell>Username</Table.HeadCell>
                 <Table.HeadCell>Email</Table.HeadCell>
                 <Table.HeadCell>Last login</Table.HeadCell>
-                <Table.HeadCell>
-                    <span className="sr-only">Action Edit</span>
-                </Table.HeadCell>
-                <Table.HeadCell>
-                    <span className="sr-only">Action Delete</span>
-                </Table.HeadCell>
+                <Table.HeadCell colSpan={2}>Action</Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
-                {data?.map((info, index) => {
-                    return (
-                        <TableRow key={index} info={info} pathname={pathname} />
-                    )
-                })}
+                {data?.length != 0 ? (
+                    data?.map((info, index) => {
+                        return (
+                            <TableRow key={index} info={info} pathname={pathname} />
+                        )
+                    })
+                ) : (
+                    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                        <Table.Cell colSpan={9}>
+                            <div className="flex flex-col text-center justify-center items-center">
+                                <Lottie className='w-96 h-96' animationData={emptyAnimation} />
+                                <h3 className='mb-3'>Not Found</h3>
+                            </div>
+                        </Table.Cell>
+                    </Table.Row>
+                )}
             </Table.Body>
         </Table>
     )

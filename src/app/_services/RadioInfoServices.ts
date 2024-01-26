@@ -1,6 +1,7 @@
 import "dotenv/config";
 import axios from "axios";
 import { RadioInfo } from "../_interfaces/RadioInfo";
+import { Response } from "../_interfaces/Response";
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
@@ -21,7 +22,7 @@ export const createRadioInfo = async (
   }
 };
 
-export const getAllRadioInfo = async (token: string): Promise<RadioInfo[]> => {
+export const getAllRadioInfo = async (token: string): Promise<Response> => {
   try {
     const response = await axios.get(`${baseURL}/radio-info`, {
       headers: {

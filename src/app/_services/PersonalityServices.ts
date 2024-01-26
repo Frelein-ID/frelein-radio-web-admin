@@ -1,13 +1,14 @@
 import "dotenv/config";
 import axios from "axios";
 import { PersonalityInfo } from "../_interfaces/PersonalityInfo";
+import { Response } from "../_interfaces/Response";
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 export const createPersonalityInfo = async (
   newRadio: PersonalityInfo,
   token: string
-): Promise<PersonalityInfo> => {
+): Promise<Response> => {
   try {
     const response = await axios.post(`${baseURL}/personality-info`, newRadio, {
       headers: {
@@ -41,7 +42,7 @@ export const getPersonalityInfoByID = async (
 
 export const getAllPersonalityInfo = async (
   token: string
-): Promise<PersonalityInfo[]> => {
+): Promise<Response> => {
   try {
     const response = await axios.get(`${baseURL}/personality-info`, {
       headers: {

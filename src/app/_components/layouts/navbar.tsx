@@ -3,9 +3,11 @@
 import { logoutUser } from '@/app/redux/features/auth'
 import { Avatar, Button, Dropdown, Navbar, DarkThemeToggle, CustomFlowbiteTheme } from 'flowbite-react'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useRouter } from 'next/navigation'
+import { Users } from '@/app/_interfaces/Users'
+import { getAdminData } from '@/app/_services/AdminServices'
 
 const avatarTheme: CustomFlowbiteTheme['avatar'] = {
     root: {
@@ -29,11 +31,25 @@ const navbarTheme: CustomFlowbiteTheme['navbar'] = {
 
 const CustomNavbar = () => {
     const router = useRouter()
-    const dispatch = useDispatch()
+    const [user, setUser] = useState<Users | null>(null)
     const handleSignOut = () => {
-        dispatch(logoutUser())
+        localStorage.removeItem('token');
         router.push("/login")
     }
+    useEffect(() => {
+        const userToken = localStorage.getItem('token') || "";
+        const userId = localStorage.getItem('id') || "";
+        const fetchData = async () => {
+            try {
+                const response = await getAdminData(userToken, userId)
+                setUser(response)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchData()
+    }, [])
+    console.log({ user })
     return (
         <Navbar theme={navbarTheme} fluid>
             <div className="w-full flex justify-between items-center">

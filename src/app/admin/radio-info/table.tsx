@@ -6,6 +6,8 @@ import { Button, Checkbox, CustomFlowbiteTheme, Table, Spinner } from 'flowbite-
 import { RadioInfo } from '../../_interfaces/RadioInfo';
 import { HiPencil, HiOutlineTrash, HiExternalLink } from "react-icons/hi";
 import moment from 'moment';
+import Lottie from 'lottie-react';
+import emptyAnimation from "@/app/_animations/empty.json"
 
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
@@ -65,7 +67,7 @@ const TableRow = (
 const RadioInfoTable: React.FC<TableProps> = ({ data }) => {
     const pathname = usePathname()
     return (
-        <Table theme={tableTheme} hoverable>
+        <Table theme={tableTheme}>
             <Table.Head>
                 <Table.HeadCell className="p-4">
                     <Checkbox />
@@ -75,17 +77,23 @@ const RadioInfoTable: React.FC<TableProps> = ({ data }) => {
                 <Table.HeadCell>Added</Table.HeadCell>
                 <Table.HeadCell>Updated</Table.HeadCell>
                 <Table.HeadCell>Website</Table.HeadCell>
-                <Table.HeadCell>
-                    <span className="sr-only">Action Edit</span>
-                </Table.HeadCell>
-                <Table.HeadCell>
-                    <span className="sr-only">Action Delete</span>
-                </Table.HeadCell>
+                <Table.HeadCell colSpan={2}>Action</Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
-                {data?.map((info, index) => (
-                    <TableRow key={index} pathname={pathname} info={info} />
-                ))}
+                {data?.length != 0 ? (
+                    data?.map((info, index) => (
+                        <TableRow key={index} pathname={pathname} info={info} />
+                    ))
+                ) : (
+                    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                        <Table.Cell colSpan={8}>
+                            <div className="flex flex-col text-center justify-center items-center">
+                                <Lottie className='w-96 h-96' animationData={emptyAnimation} />
+                                <h3 className='mb-3'>Not Found</h3>
+                            </div>
+                        </Table.Cell>
+                    </Table.Row>
+                )}
             </Table.Body>
         </Table>
     )

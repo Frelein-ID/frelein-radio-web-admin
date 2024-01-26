@@ -21,6 +21,7 @@ import {
 import Lottie from 'lottie-react'
 import loadingAnimation from "@/app/_animations/loading.json"
 import { Router, useRouter } from 'next/router'
+import Skeleton from 'react-loading-skeleton'
 
 ChartJS.register(
     CategoryScale,
@@ -114,9 +115,9 @@ const Dashboard = () => {
                         </Breadcrumb>
                     </div>
                     <div className="mb-6 grid grid-cols-3 gap-8">
-                        <DashboardCards title={"Tracks"} value={statistic?.data?.total_tracks} extraValue={0} icon={BiMusic} bg={"bg-gradient-to-tr from-cyan-400 to-blue-500 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
-                        <DashboardCards title={"Users"} value={statistic?.data?.total_users} extraValue={0} icon={BiUser} bg={"bg-gradient-to-r from-fuchsia-600 to-purple-600 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
-                        <DashboardCards title={"Personality"} value={statistic?.data?.total_personality} extraValue={0} icon={BiStar} bg={"bg-gradient-to-r from-fuchsia-500 to-pink-500 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
+                        <DashboardCards title={"Tracks"} value={statistic?.data?.total_tracks || <Skeleton />} extraValue={0} icon={BiMusic} bg={"bg-gradient-to-tr from-cyan-400 to-blue-500 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
+                        <DashboardCards title={"Users"} value={statistic?.data?.total_users || <Skeleton />} extraValue={0} icon={BiUser} bg={"bg-gradient-to-r from-fuchsia-600 to-purple-600 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
+                        <DashboardCards title={"Personality"} value={statistic?.data?.total_personality || <Skeleton />} extraValue={0} icon={BiStar} bg={"bg-gradient-to-r from-fuchsia-500 to-pink-500 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
                     </div>
                     <div className="mb-6 flex">
                         <div className="relative overflow-scroll object-cover bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">

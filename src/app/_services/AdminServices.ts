@@ -26,7 +26,7 @@ export const getStatistics = async (token: String): Promise<Response> => {
 export const getAdminData = async (
   token: String,
   id: String
-): Promise<Object> => {
+): Promise<Users> => {
   try {
     const response = await axios.get<Users>(`${baseURL}/user/${id}/my`, {
       headers: {
@@ -36,6 +36,6 @@ export const getAdminData = async (
     return response.data;
   } catch (error) {
     console.log({ error });
-    return { error };
+    throw { error };
   }
 };
