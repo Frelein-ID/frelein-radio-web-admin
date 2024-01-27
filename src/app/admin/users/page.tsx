@@ -9,26 +9,18 @@ import UsersTable from './table'
 import AdminLayout from '../adminLayout'
 import { Users } from '@/app/_interfaces/Users'
 import { getAllUser } from '@/app/_services/UserServices'
-import Skeleton from 'react-loading-skeleton'
 import Lottie from 'lottie-react'
 import loadingAnimation from "@/app/_animations/loading.json"
+import { loadDataFromStorage } from '@/app/_utils/auth-utils'
 
 const UsersPage = () => {
-    const [token, setToken] = useState("")
-    const loadTokenFromLocalStorage = (): string => {
-        const token = localStorage.getItem('token') || "";
-        return token
-    };
     const pathname = usePathname()
+    const [token, setToken] = useState("")
     const [users, setUsers] = useState<Users[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        const token = loadTokenFromLocalStorage()
-        setToken(token)
-    }, [])
-
-    useEffect(() => {
+        setToken(loadDataFromStorage("token"))
         const fetchData = async () => {
             try {
                 const response = await getAllUser(token)

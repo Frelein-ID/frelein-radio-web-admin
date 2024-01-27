@@ -11,39 +11,16 @@ import AdminLayout from '../adminLayout'
 import RadioTracksTable from './table'
 import Lottie from 'lottie-react'
 import loadingAnimation from "@/app/_animations/loading.json"
-
-const tableTheme: CustomFlowbiteTheme['table'] = {
-    head: {
-        cell: {
-            base: "bg-gray-50 dark:bg-gray-700 px-6 py-3"
-        }
-    }
-}
-
-let monthNames = [
-    'Januari', 'Februari', 'Maret',
-    'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September',
-    'Oktober', 'November', 'Desember'
-];
+import { loadDataFromStorage } from '@/app/_utils/auth-utils'
 
 const RadioTracks = () => {
     const pathname = usePathname()
+    const [token, setToken] = useState("")
     const [radioTracks, setRadioTracks] = useState<RadioTracks[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
-    const [token, setToken] = useState("")
-    const loadTokenFromLocalStorage = (): string => {
-        const token = localStorage.getItem('token') || "";
-        return token
-    };
     useEffect(() => {
-        const token = loadTokenFromLocalStorage()
-        setToken(token)
-        console.log({ token })
-    }, [])
-
-    useEffect(() => {
+        setToken(loadDataFromStorage("token"))
         const fetchRadioTracks = async () => {
             try {
                 const response = await getAllRadioTracks(token)

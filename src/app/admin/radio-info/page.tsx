@@ -11,24 +11,16 @@ import RadioInfoTable from './table'
 import AdminLayout from '../adminLayout'
 import Lottie from 'lottie-react'
 import loadingAnimation from "@/app/_animations/loading.json"
+import { loadDataFromStorage } from '@/app/_utils/auth-utils'
 
 const RadioInfoPage = () => {
     const pathname = usePathname()
+    const [token, setToken] = useState<string>("")
     const [radioInfo, setRadioInfo] = useState<RadioInfo[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
-    const [token, setToken] = useState("")
-    const loadTokenFromLocalStorage = (): string => {
-        const token = localStorage.getItem('token') || "";
-        return token
-    };
     useEffect(() => {
-        const token = loadTokenFromLocalStorage()
-        setToken(token)
-        console.log({ token })
-    }, [])
-
-    useEffect(() => {
+        setToken(loadDataFromStorage("token"))
         const fetchRadioInfo = async () => {
             try {
                 const response = await getAllRadioInfo(token)

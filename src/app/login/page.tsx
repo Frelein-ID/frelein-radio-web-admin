@@ -7,6 +7,8 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import { login } from '../_services/AuthServices'
 import { Users } from '../_interfaces/Users'
 import { useRouter } from 'next/navigation'
+import { storeDataToStoage } from '../_utils/auth-utils'
+import { Response } from '../_interfaces/Response'
 
 const LoginPage = () => {
     const router = useRouter()
@@ -15,17 +17,13 @@ const LoginPage = () => {
         handleSubmit,
         formState: { errors },
     } = useForm<Users>()
-    const saveCredentialsToLocalStorage = (token: string, userId: string) => {
-        localStorage.setItem('token', token);
-        localStorage.setItem('userId', userId);
-    };
     const onSubmit: SubmitHandler<Users> = async (data) => {
-        const response: any = await login(data)
+        const response: Response = await login(data)
         console.log({ response })
         const token: string = response?.data?.token
         const userId: string = response?.data?.id
-        console.log({ token, userId })
-        saveCredentialsToLocalStorage(token, userId)
+        storeDataToStoage(token, "token")
+        storeDataToStoage(userId, "userId")
         router.push("/admin/dashboard")
     }
     return (

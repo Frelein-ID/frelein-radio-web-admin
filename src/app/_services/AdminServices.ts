@@ -2,7 +2,6 @@
 
 import dotenv from "dotenv";
 import axios from "axios";
-import { Users } from "../_interfaces/Users";
 import { Response } from "../_interfaces/Response";
 
 dotenv.config();
@@ -26,9 +25,9 @@ export const getStatistics = async (token: String): Promise<Response> => {
 export const getAdminData = async (
   token: String,
   id: String
-): Promise<Users> => {
+): Promise<Response> => {
   try {
-    const response = await axios.get<Users>(`${baseURL}/user/${id}/my`, {
+    const response = await axios.get(`${baseURL}/user/${id}/my`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

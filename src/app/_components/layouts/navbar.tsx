@@ -8,6 +8,8 @@ import { useDispatch } from 'react-redux'
 import { useRouter } from 'next/navigation'
 import { Users } from '@/app/_interfaces/Users'
 import { getAdminData } from '@/app/_services/AdminServices'
+import { verifyUser } from '@/app/_utils/auth-utils'
+import Skeleton from 'react-loading-skeleton'
 
 const avatarTheme: CustomFlowbiteTheme['avatar'] = {
     root: {
@@ -37,19 +39,16 @@ const CustomNavbar = () => {
         router.push("/login")
     }
     useEffect(() => {
-        const userToken = localStorage.getItem('token') || "";
-        const userId = localStorage.getItem('id') || "";
         const fetchData = async () => {
             try {
-                const response = await getAdminData(userToken, userId)
-                setUser(response)
+                setUser(await verifyUser())
             } catch (error) {
                 console.log(error)
             }
         }
         fetchData()
     }, [])
-    console.log({ user })
+
     return (
         <Navbar theme={navbarTheme} fluid>
             <div className="w-full flex justify-between items-center">
@@ -63,12 +62,12 @@ const CustomNavbar = () => {
                             arrowIcon={false}
                             inline
                             label={
-                                <Avatar theme={avatarTheme} alt="User settings" img="/images/people.jpg" rounded />
+                                <Avatar theme={avatarTheme} alt="User profile" title="User profile" img={user?.image != null ? (user.image) : ("/images/people.jpg")} rounded />
                             }
                         >
                             <Dropdown.Header>
-                                <span className="block text-sm">Bonnie Green</span>
-                                <span className="block truncate text-sm font-medium">name@flowbite.com</span>
+                                <span className="block text-sm">{user?.name || <Skeleton />}</span>
+                                <span className="block truncate text-sm font-medium">{user?.email || <Skeleton />}</span>
                             </Dropdown.Header>
                             <Dropdown.Item>Settings</Dropdown.Item>
                             <Dropdown.Divider />

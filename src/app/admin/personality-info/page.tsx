@@ -11,26 +11,16 @@ import { getAllPersonalityInfo } from '../../_services/PersonalityServices'
 import AdminLayout from '../adminLayout'
 import Lottie from 'lottie-react'
 import loadingAnimation from "@/app/_animations/loading.json"
-
+import { loadDataFromStorage } from '@/app/_utils/auth-utils'
 
 const PersonalityInfo = () => {
     const pathname = usePathname()
+    const [token, setToken] = useState<string>("")
     const [isLoading, setIsLoading] = useState(true)
-
-    const [token, setToken] = useState("")
-    const loadTokenFromLocalStorage = (): string => {
-        const token = localStorage.getItem('token') || "";
-        return token
-    };
-
     const [personalityInfo, setPersonalityInfo] = useState<PersonalityInfo[]>([])
 
     useEffect(() => {
-        const token = loadTokenFromLocalStorage()
-        setToken(token)
-    }, [])
-
-    useEffect(() => {
+        setToken(loadDataFromStorage("token"))
         const fetchData = async () => {
             try {
                 const response = await getAllPersonalityInfo(token)

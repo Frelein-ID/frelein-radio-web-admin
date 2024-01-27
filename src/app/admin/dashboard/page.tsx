@@ -22,6 +22,8 @@ import Lottie from 'lottie-react'
 import loadingAnimation from "@/app/_animations/loading.json"
 import { Router, useRouter } from 'next/router'
 import Skeleton from 'react-loading-skeleton'
+import { loadDataFromStorage, verifyUser } from '@/app/_utils/auth-utils'
+import { verify } from 'crypto'
 
 ChartJS.register(
     CategoryScale,
@@ -61,23 +63,15 @@ export const registerChartOptions = {
 
 const Dashboard = () => {
     const [isLoading, setIsLoading] = useState(true)
-    const [token, setToken] = useState("")
-    const [userId, setUserId] = useState("")
-    const [adminData, setAdminData] = useState({})
     const [statistic, setStatistic] = useState<any>({})
     const [loginChartData, setLoginChartData] = useState<any>([])
     const [loginChartLabel, setLoginChartLabel] = useState<any>([])
     const [registerChartData, setRegisterChartData] = useState<any>([])
     const [registerChartLabel, setRegisterChartLabel] = useState<any>([])
-    const loadTokenFromLocalStorage = (): string => {
-        const token = localStorage.getItem('token') || "";
-        return token
-    };
 
     useEffect(() => {
-        const token = loadTokenFromLocalStorage()
+        const token = loadDataFromStorage("token")
         if (token) {
-            setToken(token)
             const fetchData = async () => {
                 try {
                     await getStatistics(token).then((value) => {
@@ -100,11 +94,9 @@ const Dashboard = () => {
     return (
         <AdminLayout>
             {isLoading ? (
-                <>
-                    <div className='w-full h-full flex justify-center items-center'>
-                        <Lottie animationData={loadingAnimation} />
-                    </div>
-                </>
+                <div className='w-full h-full flex justify-center items-center'>
+                    <Lottie animationData={loadingAnimation} />
+                </div>
             ) : (
                 <>
                     <div className="mb-6">
@@ -115,9 +107,9 @@ const Dashboard = () => {
                         </Breadcrumb>
                     </div>
                     <div className="mb-6 grid grid-cols-3 gap-8">
-                        <DashboardCards title={"Tracks"} value={statistic?.data?.total_tracks || <Skeleton />} extraValue={0} icon={BiMusic} bg={"bg-gradient-to-tr from-cyan-400 to-blue-500 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
-                        <DashboardCards title={"Users"} value={statistic?.data?.total_users || <Skeleton />} extraValue={0} icon={BiUser} bg={"bg-gradient-to-r from-fuchsia-600 to-purple-600 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
-                        <DashboardCards title={"Personality"} value={statistic?.data?.total_personality || <Skeleton />} extraValue={0} icon={BiStar} bg={"bg-gradient-to-r from-fuchsia-500 to-pink-500 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
+                        <DashboardCards title={"Tracks"} value={statistic?.data?.total_tracks || "NaN"} extraValue={0} icon={BiMusic} bg={"bg-gradient-to-tr from-cyan-400 to-blue-500 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
+                        <DashboardCards title={"Users"} value={statistic?.data?.total_users || "NaN"} extraValue={0} icon={BiUser} bg={"bg-gradient-to-r from-fuchsia-600 to-purple-600 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
+                        <DashboardCards title={"Personality"} value={statistic?.data?.total_personality || "NaN"} extraValue={0} icon={BiStar} bg={"bg-gradient-to-r from-fuchsia-500 to-pink-500 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
                     </div>
                     <div className="mb-6 flex">
                         <div className="relative overflow-scroll object-cover bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
