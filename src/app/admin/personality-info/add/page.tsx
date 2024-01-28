@@ -41,8 +41,8 @@ const PersonalityInfoAddPage = () => {
                 text: "Personality data has been added",
                 icon: "success",
             }).then((result) => {
-                if (result.isConfirmed) {
-                    router.back()
+                if (result) {
+                    router.push("/admin/personality-info")
                 }
             })
         }

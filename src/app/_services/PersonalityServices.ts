@@ -24,9 +24,9 @@ export const createPersonalityInfo = async (
 };
 
 export const getPersonalityInfoByID = async (
-  id: Promise<PersonalityInfo["id"]>,
+  id: string,
   token: string
-): Promise<PersonalityInfo> => {
+): Promise<Response> => {
   try {
     const response = await axios.get(`${baseURL}/personality-info/${id}`, {
       headers: {
@@ -60,7 +60,7 @@ export const updatePersonalityInfo = async (
   id: string,
   updatedRadio: PersonalityInfo,
   token: string
-): Promise<PersonalityInfo> => {
+): Promise<Response> => {
   try {
     const response = await axios.put(
       `${baseURL}/personality-info/${id}`,
@@ -81,13 +81,14 @@ export const updatePersonalityInfo = async (
 export const deletePersonalityInfo = async (
   id: string,
   token: string
-): Promise<void> => {
+): Promise<Response> => {
   try {
-    await axios.delete(`${baseURL}/personality-info/${id}`, {
+    const response = await axios.delete(`${baseURL}/personality-info/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+    return response.data;
   } catch (error) {
     console.log("Error deleting personality info:", error);
     throw error;

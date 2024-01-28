@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Button, Checkbox, CustomFlowbiteTheme, Table } from 'flowbite-react'
 import { HiPencil, HiOutlineTrash } from "react-icons/hi";
@@ -11,6 +11,8 @@ import moment from 'moment';
 import { deletePersonalityInfo } from '@/app/_services/PersonalityServices';
 import Lottie from 'lottie-react';
 import emptyAnimation from "@/app/_animations/empty.json"
+import Image from 'next/image';
+import { Response } from '@/app/_interfaces/Response';
 
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
@@ -31,6 +33,36 @@ interface TableRowProps {
     token: string
 }
 
+const handleDelete = (
+    id: string,
+    token: string
+) => {
+    swal({
+        title: WARNING_TITLE,
+        text: WARNING_SUBTITLE,
+        icon: "warning",
+        dangerMode: true,
+    })
+        .then(async (willDelete) => {
+            if (willDelete) {
+                const response: Response = await deletePersonalityInfo(id, token)
+                if (response?.status == 200) {
+                    swal({
+                        title: "Success!",
+                        text: response?.message,
+                        icon: "success",
+                    })
+                } else {
+                    swal({
+                        title: "Error",
+                        text: response?.message,
+                        icon: "error",
+                    })
+                }
+            }
+        });
+}
+
 const TableRow = (
     data: TableRowProps
 ) => {
@@ -41,10 +73,7 @@ const TableRow = (
             </Table.Cell>
             <Table.Cell>
                 <div className='max-w-12 aspect-square overflow-hidden rounded-full'>
-                    {/* <Image className='w-full h-auto object-cover' height={48} width={48} src={info.image} title={info.name} alt={info.name} loading="lazy" /> */}
-
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img className='w-full h-auto object-cover' height={48} width={48} src={data.info?.image} title={`${data.info?.name} (${data.info?.name_jp})`} alt={`${data.info?.name} (${data.info?.name_jp})`} loading="lazy" />
+                    <Image className='w-full h-auto object-cover' height={48} width={48} src={data.info?.image} title={data.info?.name} alt={data.info?.name} loading="lazy" />
                 </div>
             </Table.Cell>
             <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
@@ -66,37 +95,8 @@ const TableRow = (
         </Table.Row>
     )
 }
-const handleDelete = (
-    id: string,
-    token: string
-) => {
-    swal({
-        title: WARNING_TITLE,
-        text: WARNING_SUBTITLE,
-        icon: "warning",
-        dangerMode: true,
-    })
-        .then(async (willDelete) => {
-            if (willDelete) {
-                const response: any = await deletePersonalityInfo(id, token)
-                if (response?.status == 200) {
-                    swal({
-                        title: "Success!",
-                        text: response?.message,
-                        icon: "success",
-                    })
-                } else {
-                    swal({
-                        title: "Error",
-                        text: response?.message,
-                        icon: "error",
-                    })
-                }
-            }
-        });
-}
 
-const PersonalityInfoTable: React.FC<TableProps> = ({ data, loading, token }) => {
+const PersonalityInfoTable: React.FC<TableProps> = ({ data, token }) => {
     const pathname = usePathname()
     return (
         <Table theme={tableTheme}>

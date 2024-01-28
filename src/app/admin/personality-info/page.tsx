@@ -11,10 +11,10 @@ import { getAllPersonalityInfo } from '../../_services/PersonalityServices'
 import AdminLayout from '../adminLayout'
 import Lottie from 'lottie-react'
 import loadingAnimation from "@/app/_animations/loading.json"
-import { CheckUserIsLogin, loadDataFromStorage } from '@/app/_utils/auth-utils'
+import { loadDataFromStorage } from '@/app/_utils/auth-utils'
 import { NextSeo } from 'next-seo'
 
-const PersonalityInfo = () => {
+const PersonalityInfoPage = () => {
     const pathname = usePathname()
     const router = useRouter()
     const [token, setToken] = useState<string>("")
@@ -75,4 +75,4 @@ const PersonalityInfo = () => {
     )
 }
 
-export default PersonalityInfo
+export default PersonalityInfoPage
