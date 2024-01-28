@@ -12,6 +12,7 @@ import AdminLayout from '../adminLayout'
 import Lottie from 'lottie-react'
 import loadingAnimation from "@/app/_animations/loading.json"
 import { loadDataFromStorage } from '@/app/_utils/auth-utils'
+import { NextSeo } from 'next-seo'
 
 const RadioInfoPage = () => {
     const pathname = usePathname()
@@ -36,6 +37,9 @@ const RadioInfoPage = () => {
 
     return (
         <AdminLayout>
+            <NextSeo
+                title='Radio Information'
+            />
             {isLoading ? (
                 <div className='w-full h-full flex justify-center items-center'>
                     <Lottie animationData={loadingAnimation} />

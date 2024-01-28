@@ -1,16 +1,40 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { getAdminData } from "../_services/AdminServices";
+import { Users } from "../_interfaces/Users";
+import { useEffect } from "react";
 
 export const loadDataFromStorage = (key: string): string => {
   const data = localStorage.getItem(key) || "";
   return data;
 };
 
-export const verifyUser = async () => {
+export const removeDataFromStorage = (key: string): void => {
+  localStorage.removeItem(key);
+};
+
+export const CheckUserIsLogin = () => {
+  const token = loadDataFromStorage("token");
+  const id = loadDataFromStorage("userId");
+  console.log({ token, id });
+  if (token !== "" && id !== "") {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+export const VerifyUser = async (): Promise<Users | null> => {
   try {
     const token = loadDataFromStorage("token");
     const id = loadDataFromStorage("userId");
     const response = await getAdminData(token, id);
-    return response.data;
+    if (response.status != 200) {
+      return null;
+    } else {
+      return response.data;
+    }
   } catch (error) {
     throw error;
   }

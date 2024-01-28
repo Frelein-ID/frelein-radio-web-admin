@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux'
 import { useRouter } from 'next/navigation'
 import { Users } from '@/app/_interfaces/Users'
 import { getAdminData } from '@/app/_services/AdminServices'
-import { verifyUser } from '@/app/_utils/auth-utils'
+import { VerifyUser, removeDataFromStorage } from '@/app/_utils/auth-utils'
 import Skeleton from 'react-loading-skeleton'
 
 const avatarTheme: CustomFlowbiteTheme['avatar'] = {
@@ -35,13 +35,14 @@ const CustomNavbar = () => {
     const router = useRouter()
     const [user, setUser] = useState<Users | null>(null)
     const handleSignOut = () => {
-        localStorage.removeItem('token');
+        removeDataFromStorage("token")
+        removeDataFromStorage("userId")
         router.push("/login")
     }
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setUser(await verifyUser())
+                setUser(await VerifyUser())
             } catch (error) {
                 console.log(error)
             }

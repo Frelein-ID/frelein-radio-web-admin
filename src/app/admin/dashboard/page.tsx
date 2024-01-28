@@ -20,10 +20,8 @@ import {
 } from 'chart.js';
 import Lottie from 'lottie-react'
 import loadingAnimation from "@/app/_animations/loading.json"
-import { Router, useRouter } from 'next/router'
-import Skeleton from 'react-loading-skeleton'
-import { loadDataFromStorage, verifyUser } from '@/app/_utils/auth-utils'
-import { verify } from 'crypto'
+import { loadDataFromStorage } from '@/app/_utils/auth-utils'
+import { NextSeo } from 'next-seo'
 
 ChartJS.register(
     CategoryScale,
@@ -71,97 +69,100 @@ const Dashboard = () => {
 
     useEffect(() => {
         const token = loadDataFromStorage("token")
-        if (token) {
-            const fetchData = async () => {
-                try {
-                    await getStatistics(token).then((value) => {
-                        setStatistic(value)
-                        setLoginChartData(value.data.users_login_last_week.map((item: any) => item.value))
-                        setLoginChartLabel(value.data.users_login_last_week.map((item: any) => item.date))
-                        setRegisterChartData(value.data.users_register_last_week.map((item: any) => item.value))
-                        setRegisterChartLabel(value.data.users_register_lask_week.map((item: any) => item.date))
-                    })
-                } catch (error) {
-                    console.log(error)
-                } finally {
-                    setIsLoading(false)
-                }
+        const fetchData = async () => {
+            try {
+                await getStatistics(token).then((value) => {
+                    setStatistic(value)
+                    setLoginChartData(value.data.users_login_last_week.map((item: any) => item.value))
+                    setLoginChartLabel(value.data.users_login_last_week.map((item: any) => item.date))
+                    setRegisterChartData(value.data.users_register_last_week.map((item: any) => item.value))
+                    setRegisterChartLabel(value.data.users_register_lask_week.map((item: any) => item.date))
+                })
+            } catch (error: any) {
+                console.log(error)
+            } finally {
+                setIsLoading(false)
             }
-            fetchData()
         }
+        fetchData()
     }, [])
 
     return (
-        <AdminLayout>
-            {isLoading ? (
-                <div className='w-full h-full flex justify-center items-center'>
-                    <Lottie animationData={loadingAnimation} />
-                </div>
-            ) : (
-                <>
-                    <div className="mb-6">
-                        <Breadcrumb aria-label="Default breadcrumb example">
-                            <Breadcrumb.Item href="/admin/dashboard" icon={HiHome}>
-                                Dashboard
-                            </Breadcrumb.Item>
-                        </Breadcrumb>
+        <>
+            <NextSeo
+                title='Dashboard'
+            />
+            <AdminLayout>
+                {isLoading ? (
+                    <div className='w-full h-screen flex justify-center items-center'>
+                        <Lottie animationData={loadingAnimation} />
                     </div>
-                    <div className="mb-6 grid grid-cols-3 gap-8">
-                        <DashboardCards title={"Tracks"} value={statistic?.data?.total_tracks || "NaN"} extraValue={0} icon={BiMusic} bg={"bg-gradient-to-tr from-cyan-400 to-blue-500 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
-                        <DashboardCards title={"Users"} value={statistic?.data?.total_users || "NaN"} extraValue={0} icon={BiUser} bg={"bg-gradient-to-r from-fuchsia-600 to-purple-600 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
-                        <DashboardCards title={"Personality"} value={statistic?.data?.total_personality || "NaN"} extraValue={0} icon={BiStar} bg={"bg-gradient-to-r from-fuchsia-500 to-pink-500 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
-                    </div>
-                    <div className="mb-6 flex">
-                        <div className="relative overflow-scroll object-cover bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                            <div className="grid grid-cols-2 gap-8 w-full h-80">
+                ) : (
+                    <>
+                        <div className="mb-6">
+                            <Breadcrumb aria-label="Default breadcrumb example">
+                                <Breadcrumb.Item href="/admin/dashboard" icon={HiHome}>
+                                    Dashboard
+                                </Breadcrumb.Item>
+                            </Breadcrumb>
+                        </div>
+                        <div className="mb-6 grid grid-cols-3 gap-8">
+                            <DashboardCards title={"Tracks"} value={statistic?.data?.total_tracks || "NaN"} extraValue={0} icon={BiMusic} bg={"bg-gradient-to-tr from-cyan-400 to-blue-500 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
+                            <DashboardCards title={"Users"} value={statistic?.data?.total_users || "NaN"} extraValue={0} icon={BiUser} bg={"bg-gradient-to-r from-fuchsia-600 to-purple-600 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
+                            <DashboardCards title={"Personality"} value={statistic?.data?.total_personality || "NaN"} extraValue={0} icon={BiStar} bg={"bg-gradient-to-r from-fuchsia-500 to-pink-500 dark:from-purple-900 dark:to-slate-900"}></DashboardCards>
+                        </div>
+                        <div className="mb-6 flex">
+                            <div className="relative overflow-scroll object-cover bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                                <div className="grid grid-cols-2 gap-8 w-full h-80">
 
-                                {loginChartLabel.length != 0 && loginChartData.length != 0 ? (
-                                    <Line
-                                        options={loginChartOptions}
-                                        data={{
-                                            labels: loginChartLabel,
-                                            datasets: [
-                                                {
-                                                    label: 'Users',
-                                                    data: loginChartData,
-                                                    fill: false,
-                                                    borderColor: 'rgb(75, 192, 192)',
-                                                    tension: 0.1
-                                                }
-                                            ]
-                                        }}
-                                    />
-                                ) : (
-                                    <></>
-                                )}
+                                    {loginChartLabel.length != 0 && loginChartData.length != 0 ? (
+                                        <Line
+                                            options={loginChartOptions}
+                                            data={{
+                                                labels: loginChartLabel,
+                                                datasets: [
+                                                    {
+                                                        label: 'Users',
+                                                        data: loginChartData,
+                                                        fill: false,
+                                                        borderColor: 'rgb(75, 192, 192)',
+                                                        tension: 0.1
+                                                    }
+                                                ]
+                                            }}
+                                        />
+                                    ) : (
+                                        <></>
+                                    )}
 
-                                {registerChartLabel.length != 0 && registerChartData.length != 0 ? (
-                                    <Line
-                                        options={registerChartOptions}
-                                        data={{
-                                            labels: registerChartLabel,
-                                            datasets: [
-                                                {
-                                                    label: 'Users',
-                                                    data: registerChartData,
-                                                    fill: false,
-                                                    borderColor: 'rgb(75, 192, 192)',
-                                                    tension: 0.1
-                                                }
-                                            ]
-                                        }}
-                                    />
-                                ) : (
-                                    <></>
-                                )}
+                                    {registerChartLabel.length != 0 && registerChartData.length != 0 ? (
+                                        <Line
+                                            options={registerChartOptions}
+                                            data={{
+                                                labels: registerChartLabel,
+                                                datasets: [
+                                                    {
+                                                        label: 'Users',
+                                                        data: registerChartData,
+                                                        fill: false,
+                                                        borderColor: 'rgb(75, 192, 192)',
+                                                        tension: 0.1
+                                                    }
+                                                ]
+                                            }}
+                                        />
+                                    ) : (
+                                        <></>
+                                    )}
 
 
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </>
-            )}
-        </AdminLayout>
+                    </>
+                )}
+            </AdminLayout>
+        </>
     )
 }
 

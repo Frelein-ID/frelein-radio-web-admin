@@ -6,12 +6,13 @@ import { Breadcrumb, Button, Checkbox, CustomFlowbiteTheme, Table, TextInput } f
 import { HiHome } from 'react-icons/hi'
 import { RadioTracks } from '../../_interfaces/RadioTracks'
 import { getAllRadioTracks } from '../../_services/RadioTracksServices'
-import { HiSearch, HiPencil, HiOutlineTrash } from "react-icons/hi";
+import { HiSearch } from "react-icons/hi";
 import AdminLayout from '../adminLayout'
 import RadioTracksTable from './table'
 import Lottie from 'lottie-react'
 import loadingAnimation from "@/app/_animations/loading.json"
 import { loadDataFromStorage } from '@/app/_utils/auth-utils'
+import { NextSeo } from 'next-seo'
 
 const RadioTracks = () => {
     const pathname = usePathname()
@@ -20,6 +21,9 @@ const RadioTracks = () => {
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
+        <NextSeo
+            title='Radio Tracks'
+        />
         setToken(loadDataFromStorage("token"))
         const fetchRadioTracks = async () => {
             try {

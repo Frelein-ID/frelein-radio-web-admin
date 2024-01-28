@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Breadcrumb, Button, Checkbox, CustomFlowbiteTheme, Table, TextInput } from 'flowbite-react'
 import { HiHome } from 'react-icons/hi'
 import { HiSearch } from "react-icons/hi";
@@ -11,10 +11,12 @@ import { getAllPersonalityInfo } from '../../_services/PersonalityServices'
 import AdminLayout from '../adminLayout'
 import Lottie from 'lottie-react'
 import loadingAnimation from "@/app/_animations/loading.json"
-import { loadDataFromStorage } from '@/app/_utils/auth-utils'
+import { CheckUserIsLogin, loadDataFromStorage } from '@/app/_utils/auth-utils'
+import { NextSeo } from 'next-seo'
 
 const PersonalityInfo = () => {
     const pathname = usePathname()
+    const router = useRouter()
     const [token, setToken] = useState<string>("")
     const [isLoading, setIsLoading] = useState(true)
     const [personalityInfo, setPersonalityInfo] = useState<PersonalityInfo[]>([])
@@ -36,6 +38,9 @@ const PersonalityInfo = () => {
 
     return (
         <AdminLayout>
+            <NextSeo
+                title='Personality Information'
+            />
             {isLoading ? (
                 <div className='w-full h-full flex justify-center items-center'>
                     <Lottie animationData={loadingAnimation} />
@@ -57,7 +62,7 @@ const PersonalityInfo = () => {
                             <TextInput id="search-table" type="text" icon={HiSearch} placeholder="Search here..." />
                             <div className="grid grid-cols-2 gap-3">
                                 <Button color="failure">Delete selected</Button>
-                                <Button href={`${pathname}/add/`} color="success">Add new</Button>
+                                <Button onClick={() => router.push(`${pathname}/add/`)} color="success">Add new</Button>
                             </div>
                         </div>
                         <div className="overflow-scroll">
