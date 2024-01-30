@@ -19,7 +19,7 @@ import { loadDataFromStorage } from '@/app/_utils/auth-utils';
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
         cell: {
-            base: "bg-gray-50 dark:bg-gray-700 px-6 py-3"
+            base: "bg-gray-50 dark:bg-gray-700 px-6 py-3 hover:cursor-pointer"
         }
     }
 }
@@ -30,12 +30,20 @@ interface TableRowProps {
     token: string
 }
 
+interface SortableHeaderProps {
+    columnKey: keyof PersonalityInfo;
+    columnName: string;
+    sortConfig: { key: keyof PersonalityInfo; direction: 'asc' | 'desc' } | null;
+    handleSorting: (key: keyof PersonalityInfo) => void;
+}
+
 const PersonalityInfoTable: React.FC = () => {
     const pathname = usePathname()
     const [checkboxState, setCheckboxState] = useState<{ [key: string]: 'checked' | 'unchecked' | 'indeterminate' }>({});
     const [token, setToken] = useState<string>("")
     const [isLoading, setIsLoading] = useState(true)
     const [personalityInfo, setPersonalityInfo] = useState<PersonalityInfo[]>([])
+    const [sortConfig, setSortConfig] = useState<{ key: keyof PersonalityInfo; direction: 'asc' | 'desc' } | null>(null);
 
     useEffect(() => {
         console.log({ checkboxState })
@@ -108,7 +116,42 @@ const PersonalityInfoTable: React.FC = () => {
         });
     }
 
+    function handleSorting(key: keyof PersonalityInfo) {
+        let direction: 'asc' | 'desc' = 'asc';
+        if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const sortedData = () => {
+        if (!sortConfig) {
+            return personalityInfo;
+        }
+
+        return [...personalityInfo].sort((a, b) => {
+            if (a[sortConfig.key] < b[sortConfig.key]) {
+                return sortConfig.direction === 'asc' ? -1 : 1;
+            }
+            if (a[sortConfig.key] > b[sortConfig.key]) {
+                return sortConfig.direction === 'asc' ? 1 : -1;
+            }
+            return 0;
+        });
+    };
+
     // component
+    const SortableHeader: React.FC<SortableHeaderProps> = ({ columnKey, columnName, sortConfig, handleSorting }) => {
+        const isSorted = sortConfig && sortConfig.key === columnKey;
+
+        return (
+            <th onClick={() => handleSorting(columnKey)}>
+                {columnName}
+                {isSorted && (sortConfig?.direction === 'asc' ? ' ▲' : ' ▼')}
+            </th>
+        );
+    };
+
     const TableRow = (
         data: TableRowProps
     ) => {
@@ -177,15 +220,43 @@ const PersonalityInfoTable: React.FC = () => {
                                 />
                             </Table.HeadCell>
                             <Table.HeadCell>Image</Table.HeadCell>
-                            <Table.HeadCell>Name</Table.HeadCell>
-                            <Table.HeadCell>Favorited by</Table.HeadCell>
-                            <Table.HeadCell>Added</Table.HeadCell>
-                            <Table.HeadCell>Updated</Table.HeadCell>
+                            <Table.HeadCell>
+                                <SortableHeader
+                                    columnKey='name'
+                                    columnName="Name"
+                                    sortConfig={sortConfig}
+                                    handleSorting={handleSorting}
+                                />
+                            </Table.HeadCell>
+                            <Table.HeadCell>
+                                <SortableHeader
+                                    columnKey='favoritedBy'
+                                    columnName="Favorited By"
+                                    sortConfig={sortConfig}
+                                    handleSorting={handleSorting}
+                                />
+                            </Table.HeadCell>
+                            <Table.HeadCell>
+                                <SortableHeader
+                                    columnKey='createdAt'
+                                    columnName="Added"
+                                    sortConfig={sortConfig}
+                                    handleSorting={handleSorting}
+                                />
+                            </Table.HeadCell>
+                            <Table.HeadCell>
+                                <SortableHeader
+                                    columnKey='updatedAt'
+                                    columnName="Updated"
+                                    sortConfig={sortConfig}
+                                    handleSorting={handleSorting}
+                                />
+                            </Table.HeadCell>
                             <Table.HeadCell colSpan={2}>Action</Table.HeadCell>
                         </Table.Head>
                         <Table.Body className="divide-y">
-                            {personalityInfo?.length != 0 ? (
-                                personalityInfo?.map((info, index) => {
+                            {sortedData()?.length != 0 ? (
+                                sortedData()?.map((info, index) => {
                                     return (
                                         <TableRow key={index} pathname={pathname} info={info} token={token} />
                                     )
