@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
-import { Button, Checkbox, CustomFlowbiteTheme, Table } from 'flowbite-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { Button, Checkbox, CustomFlowbiteTheme, Spinner, Table, TextInput } from 'flowbite-react'
 import { HiPencil, HiOutlineTrash } from "react-icons/hi";
 import { PersonalityInfo } from '../../_interfaces/PersonalityInfo';
 import swal from 'sweetalert';
@@ -15,6 +15,7 @@ import loadingAnimation from "@/app/_animations/loading.json"
 import Image from 'next/image';
 import { Response } from '@/app/_interfaces/Response';
 import { loadDataFromStorage } from '@/app/_utils/auth-utils';
+import { HiSearch } from "react-icons/hi";
 
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
@@ -39,14 +40,18 @@ interface SortableHeaderProps {
 
 const PersonalityInfoTable: React.FC = () => {
     const pathname = usePathname()
+    const router = useRouter()
     const [checkboxState, setCheckboxState] = useState<{ [key: string]: 'checked' | 'unchecked' | 'indeterminate' }>({});
     const [token, setToken] = useState<string>("")
     const [isLoading, setIsLoading] = useState(true)
+    const [isCompLoading, setIsCompLoading] = useState(false)
     const [personalityInfo, setPersonalityInfo] = useState<PersonalityInfo[]>([])
+    const [checkboxFilteredKeys, setCheckboxFilteredKeys] = useState<string[]>([])
     const [sortConfig, setSortConfig] = useState<{ key: keyof PersonalityInfo; direction: 'asc' | 'desc' } | null>(null);
+    const [searchTerm, setSearchTerm] = useState<string>('');
 
     useEffect(() => {
-        console.log({ checkboxState })
+        handleFilterCheckbox(checkboxState)
     }, [checkboxState])
 
     // function
@@ -78,6 +83,30 @@ const PersonalityInfoTable: React.FC = () => {
                             icon: "error",
                         })
                     }
+                }
+            });
+    }
+
+    function handleMultipleDelete() {
+        swal({
+            title: WARNING_TITLE,
+            text: WARNING_SUBTITLE,
+            icon: "warning",
+            dangerMode: true,
+        })
+            .then(async (willDelete) => {
+                if (willDelete) {
+                    for (var data of checkboxFilteredKeys) {
+                        await deletePersonalityInfo(data, token)
+                        const newData = await getAllPersonalityInfo(token)
+                        setCheckboxFilteredKeys(checkboxFilteredKeys.filter((item) => item !== data))
+                        setPersonalityInfo(newData.data)
+                    }
+                    swal({
+                        title: "Success!",
+                        text: "Deletion request has been sent",
+                        icon: "success",
+                    })
                 }
             });
     }
@@ -116,6 +145,13 @@ const PersonalityInfoTable: React.FC = () => {
         });
     }
 
+    function handleFilterCheckbox(keys: Object) {
+        const allEntries = Object.entries(keys)
+        const filteredEntries = allEntries.filter(([key, value]) => key !== "allState" && value === "checked")
+        const filteredKeys = filteredEntries.map(([key]) => key)
+        setCheckboxFilteredKeys(filteredKeys)
+    }
+
     function handleSorting(key: keyof PersonalityInfo) {
         let direction: 'asc' | 'desc' = 'asc';
         if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -124,7 +160,7 @@ const PersonalityInfoTable: React.FC = () => {
         setSortConfig({ key, direction });
     };
 
-    const sortedData = () => {
+    function sortedData() {
         if (!sortConfig) {
             return personalityInfo;
         }
@@ -138,6 +174,10 @@ const PersonalityInfoTable: React.FC = () => {
             }
             return 0;
         });
+    };
+
+    function handleSearch(e: React.ChangeEvent<HTMLInputElement>) {
+        setSearchTerm(e.target.value);
     };
 
     // component
@@ -160,7 +200,9 @@ const PersonalityInfoTable: React.FC = () => {
                 <Table.Cell className="p-4">
                     <Checkbox
                         checked={checkboxState[data?.info.id] === 'checked'}
-                        onChange={() => handleCheckboxChange(data?.info.id)}
+                        onChange={() => {
+                            handleCheckboxChange(data?.info.id)
+                        }}
                     />
                 </Table.Cell>
                 <Table.Cell>
@@ -203,6 +245,10 @@ const PersonalityInfoTable: React.FC = () => {
         fetchData()
     }, [token])
 
+    const filteredData = sortedData().filter((row) =>
+        row.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <>
             {isLoading ? (
@@ -211,12 +257,33 @@ const PersonalityInfoTable: React.FC = () => {
                 </div>
             ) : (
                 <>
+                    <div className='p-4 flex flex-row justify-between items-center bg-white dark:bg-gray-800'>
+                        <TextInput id="search-table" type="text" value={searchTerm} onChange={handleSearch} icon={HiSearch} placeholder="Search here..." />
+                        <div className="grid grid-cols-2 gap-3">
+                            <Button onClick={() => {
+                                handleMultipleDelete()
+                            }} color="failure">Delete selected</Button>
+                            <Button disabled={isCompLoading ? true : false} onClick={() => {
+                                setIsCompLoading(true)
+                                router.push(`${pathname}/add/`)
+                            }} color="success">{isCompLoading ? (
+                                <>
+                                    <Spinner aria-label="Spinner loading" size="sm" />
+                                    <span className="pl-3">Loading...</span>
+                                </>) : "Add new"}</Button>
+                        </div>
+                    </div>
+                    <div className='flex flex-col'>
+                        {checkboxFilteredKeys}
+                    </div>
                     <Table theme={tableTheme}>
                         <Table.Head>
                             <Table.HeadCell className="p-4">
                                 <Checkbox
                                     checked={checkboxState.allState === 'checked'}
-                                    onChange={handleAllCheckboxChange}
+                                    onChange={() => {
+                                        handleAllCheckboxChange()
+                                    }}
                                 />
                             </Table.HeadCell>
                             <Table.HeadCell>Image</Table.HeadCell>
@@ -255,8 +322,8 @@ const PersonalityInfoTable: React.FC = () => {
                             <Table.HeadCell colSpan={2}>Action</Table.HeadCell>
                         </Table.Head>
                         <Table.Body className="divide-y">
-                            {sortedData()?.length != 0 ? (
-                                sortedData()?.map((info, index) => {
+                            {filteredData?.length != 0 ? (
+                                filteredData?.map((info, index) => {
                                     return (
                                         <TableRow key={index} pathname={pathname} info={info} token={token} />
                                     )
