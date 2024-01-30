@@ -1,10 +1,8 @@
 'use client'
 
-import { logoutUser } from '@/app/redux/features/auth'
 import { Avatar, Button, Dropdown, Navbar, DarkThemeToggle, CustomFlowbiteTheme } from 'flowbite-react'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { useRouter } from 'next/navigation'
 import { Users } from '@/app/_interfaces/Users'
 import { getAdminData } from '@/app/_services/AdminServices'
