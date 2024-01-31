@@ -207,7 +207,13 @@ const PersonalityInfoTable: React.FC = () => {
                 </Table.Cell>
                 <Table.Cell>
                     <div className='max-w-12 aspect-square overflow-hidden rounded-full'>
-                        <Image className='w-full h-auto object-cover' height={48} width={48} src={data.info?.image} title={data.info?.name} alt={data.info?.name} loading="lazy" />
+                        {data.info?.image != "" ? (
+                            <Image className='w-full h-auto object-cover' height={48} width={48} src={data.info?.image} title={data.info?.name} alt={data.info?.name} loading="lazy" />
+                        ) : (
+                            <div className='flex justify-center items-center w-full h-full object-cover bg-gray-100 dark:bg-gray-700 text-lg font-bold'>
+                                {Array.from(data.info?.name)[0]}
+                            </div>
+                        )}
                     </div>
                 </Table.Cell>
                 <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
@@ -272,9 +278,6 @@ const PersonalityInfoTable: React.FC = () => {
                                     <span className="pl-3">Loading...</span>
                                 </>) : "Add new"}</Button>
                         </div>
-                    </div>
-                    <div className='flex flex-col'>
-                        {checkboxFilteredKeys}
                     </div>
                     <Table theme={tableTheme}>
                         <Table.Head>

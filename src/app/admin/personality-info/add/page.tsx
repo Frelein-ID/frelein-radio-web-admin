@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { Response } from '@/app/_interfaces/Response';
 import Lottie from 'lottie-react';
 import loadingAnimation from "@/app/_animations/loading.json"
+import { loadDataFromStorage } from '@/app/_utils/auth-utils';
 
 const PersonalityInfoAddPage = () => {
     const router = useRouter()
@@ -19,29 +20,39 @@ const PersonalityInfoAddPage = () => {
     const [isLoading, setIsLoading] = useState(true)
     const [isCompLoading, setIsCompLoading] = useState(false)
 
-    const loadTokenFromLocalStorage = (): string => {
-        const token = localStorage.getItem('token') || "";
-        return token
-    };
     const {
         register,
         handleSubmit,
         watch,
         setValue,
+        getValues,
         formState: { errors },
-    } = useForm<PersonalityInfo>()
+    } = useForm<PersonalityInfo>({
+        defaultValues: {
+            name: "",
+            name_jp: "",
+            nickname: "",
+            birthdate: "",
+            birthplace: "",
+            bloodtype: "A",
+            image: "",
+            source: "",
+            description: ""
+        }
+    })
     register('birthdate', { required: true });
 
     useEffect(() => {
-        const token = loadTokenFromLocalStorage()
+        const token = loadDataFromStorage("token")
         setToken(token)
         setIsLoading(false)
     }, [])
 
     const onSubmit: SubmitHandler<PersonalityInfo> = async (data) => {
+        setIsCompLoading(true)
         const response: Response = await createPersonalityInfo(data, token)
-        console.log({ response })
         if (response?.status == 201) {
+            setIsCompLoading(false)
             swal({
                 title: "Success!",
                 text: "Personality data has been added",
@@ -52,7 +63,6 @@ const PersonalityInfoAddPage = () => {
                 }
             })
         } else {
-            console.log(response?.status)
             swal({
                 title: "Error",
                 text: response?.message,
@@ -91,44 +101,175 @@ const PersonalityInfoAddPage = () => {
                                     <div className="mb-2 block">
                                         <Label htmlFor="name" value="Name" />
                                     </div>
-                                    <TextInput defaultValue="" {...register("name", { required: true })} id="name" type="text" placeholder="Insert name here" required />
+                                    <TextInput
+                                        {...register("name", {
+                                            required: true,
+                                            minLength: 3,
+                                            maxLength: 255,
+                                            pattern: /([A-Za-z]+( [A-Za-z]+)+)/,
+                                        })}
+                                        defaultValue=""
+                                        id="name"
+                                        type="text"
+                                        placeholder="Insert name here"
+                                        required
+                                        color={
+                                            getValues("name") == "" ? "failure"
+                                                : (getValues("name") ? getValues("name")?.length : 0) < 3 ? "failure"
+                                                    : "success"
+                                        }
+                                        helperText={
+                                            getValues("name") == "" ? (
+                                                <>
+                                                    <span className="font-medium">Name</span> cannot be empty.
+                                                </>
+                                            ) : (getValues("name") ? getValues("name")?.length : 0) < 3 ? (
+                                                <>
+                                                    <span className="font-medium">Name</span> must be 3 character or more.
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span className="font-medium">Alright</span> this is good.
+                                                </>
+                                            )
+                                        } />
                                 </div>
                                 <div>
                                     <div className="mb-2 block">
                                         <Label htmlFor="name_jp" value="Name (Kanji)" />
                                     </div>
-                                    <TextInput defaultValue="" {...register("name_jp", { required: true })} id="name_jp" type="text" placeholder="Insert kanji name here" required />
+                                    <TextInput
+                                        {...register("name_jp", { required: false })}
+                                        defaultValue=""
+                                        id="name_jp"
+                                        type="text"
+                                        placeholder="Insert the Japanese name here"
+                                        color={"success"}
+                                        helperText={
+                                            getValues("name_jp") == "" ? (
+                                                <>
+                                                    <span className="font-medium">It&apos;s fine</span>, this field can be empty. But it will better if you fill this field.
+                                                </>
+                                            ) : (getValues("name_jp") ? getValues("name_jp")?.length : 0) < 3 ? (
+                                                <>
+                                                    <span className="font-medium">It&apos;s fine</span>, but it will better if you give information with 3 character or more character.
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span className="font-medium">Alright</span> this is good.
+                                                </>
+                                            )
+                                        }
+                                    />
                                 </div>
                                 <div>
                                     <div className="mb-2 block">
                                         <Label htmlFor="nickname" value="Nickname" />
                                     </div>
-                                    <TextInput defaultValue="" {...register("nickname", { required: true })} id="nickname" type="text" placeholder="Insert nickname here" required />
+                                    <TextInput
+                                        {...register("nickname", { required: false, })}
+                                        defaultValue=""
+                                        id="nickname"
+                                        type="text"
+                                        placeholder="Insert nickname here"
+                                        color={"success"}
+                                        helperText={
+                                            getValues("nickname") == "" ? (
+                                                <>
+                                                    <span className="font-medium">It&apos;s fine</span>, this field can be empty. But it will better if you fill this field.
+                                                </>
+                                            ) : (getValues("nickname") ? getValues("nickname")?.length : 0) < 3 ? (
+                                                <>
+                                                    <span className="font-medium">It&apos;s fine</span>, but it will better if you give information with 3 character or more character.
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span className="font-medium">Alright</span> this is good.
+                                                </>
+                                            )
+                                        }
+                                    />
                                 </div>
                                 <div>
                                     <div className="mb-2 block">
                                         <Label htmlFor="birthdate" value="Birthdate" />
                                     </div>
-                                    <Datepicker id="birthdate" type='text' placeholder='Insert birthdate here' onSelectedDateChanged={
-                                        (e) => {
-                                            const year = e.getFullYear()
-                                            const month = (e.getMonth() + 1).toString().padStart(2, '0');
-                                            const day = e.getDate().toString().padStart(2, '0');
-                                            setValue('birthdate', `${year}-${month}-${day}`)
+                                    <Datepicker
+                                        id="birthdate"
+                                        type='text'
+                                        placeholder='Insert birthdate here'
+                                        onSelectedDateChanged={
+                                            (e) => {
+                                                const year = e.getFullYear()
+                                                const month = (e.getMonth() + 1).toString().padStart(2, '0');
+                                                const day = e.getDate().toString().padStart(2, '0');
+                                                setValue('birthdate', `${year}-${month}-${day}`)
+                                            }
                                         }
-                                    } />
+                                        color={
+                                            getValues("birthdate") == "" ? "failure" : "success"
+                                        }
+                                        helperText={
+                                            getValues("birthdate") == "" ? (
+                                                <>
+                                                    Please set <span className="font-medium">Birthdate</span> properly.
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span className="font-medium">Alright</span> this is good.
+                                                </>
+                                            )
+                                        } />
                                 </div>
                                 <div>
                                     <div className="mb-2 block">
                                         <Label htmlFor="birthplace" value="Birthplace" />
                                     </div>
-                                    <TextInput defaultValue="" {...register("birthplace", { required: true })} id="birthplace" type="text" placeholder="Insert birthplace here" required />
+                                    <TextInput
+                                        {...register("birthplace", { required: false })}
+                                        defaultValue=""
+                                        id="birthplace"
+                                        type="text"
+                                        placeholder="Insert birthplace here"
+                                        color={"success"}
+                                        helperText={
+                                            getValues("birthplace") == "" ? (
+                                                <>
+                                                    <span className="font-medium">It&apos;s fine</span>, this field can be empty. But it will better if you fill this field.
+                                                </>
+                                            ) : (getValues("birthplace") ? getValues("birthplace")?.length : 0) < 3 ? (
+                                                <>
+                                                    <span className="font-medium">It&apos;s fine</span>, but it will better if you give information with 3 character or more character.
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span className="font-medium">Alright</span> this is good.
+                                                </>
+                                            )
+                                        } />
                                 </div>
                                 <div>
                                     <div className="mb-2 block">
                                         <Label htmlFor="bloodtype" value="Bloodtype" />
                                     </div>
-                                    <Select {...register("bloodtype", { required: true })} id="bloodtype" required>
+                                    <Select
+                                        {...register("bloodtype", { required: false })}
+                                        id="bloodtype"
+                                        color={
+                                            getValues("bloodtype") === "A" || "B" || "O" || "AB" ? "success" : "failure"
+                                        }
+                                        helperText={
+                                            getValues("bloodtype") === "A" || "B" || "O" || "AB" ? (
+                                                <>
+                                                    <span className="font-medium">Alright</span> this is good.
+                                                </>
+                                            ) : (
+                                                <>
+                                                    Please set <span className="font-medium">Bloodtype</span> properly.
+                                                </>
+                                            )
+                                        }
+                                    >
                                         <option>A</option>
                                         <option>B</option>
                                         <option>AB</option>
@@ -139,22 +280,85 @@ const PersonalityInfoAddPage = () => {
                                     <div className="mb-2 block">
                                         <Label htmlFor="image" value="Image url" />
                                     </div>
-                                    <TextInput defaultValue="" {...register("image", { required: true })} id="image" type="text" placeholder="Insert image url here" required />
+                                    <TextInput
+                                        {...register("image", { required: false })}
+                                        defaultValue=""
+                                        id="image"
+                                        type="text"
+                                        placeholder="Insert image url here"
+                                        color={"success"}
+                                        helperText={
+                                            getValues("image") == "" ? (
+                                                <>
+                                                    <span className="font-medium">It&apos;s fine</span>, this field can be empty. But it will better if you fill this field.
+                                                </>
+                                            ) : (getValues("image") ? getValues("image")?.length : 0) < 3 ? (
+                                                <>
+                                                    <span className="font-medium">It&apos;s fine</span>, but it will better if you give information with 3 character or more character.
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span className="font-medium">Alright</span> this is good.
+                                                </>
+                                            )
+                                        } />
                                 </div>
                                 <div>
                                     <div className="mb-2 block">
                                         <Label htmlFor="description" value="Description" />
                                     </div>
-                                    <Textarea defaultValue="" {...register("description", { required: true })} id="description" placeholder="Insert description here" rows={4} />
+                                    <Textarea
+                                        defaultValue=""
+                                        {...register("description", { required: false })}
+                                        id="description"
+                                        placeholder="Insert description here"
+                                        rows={4}
+                                        color={"success"}
+                                        helperText={
+                                            getValues("description") == "" ? (
+                                                <>
+                                                    <span className="font-medium">It&apos;s fine</span>, this field can be empty. But it will better if you fill this field.
+                                                </>
+                                            ) : (getValues("description") ? getValues("description")?.length : 0) < 3 ? (
+                                                <>
+                                                    <span className="font-medium">It&apos;s fine</span>, but it will better if you give information with 3 character or more character.
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span className="font-medium">Alright</span> this is good.
+                                                </>
+                                            )
+                                        } />
                                 </div>
                                 <div>
                                     <div className="mb-2 block">
                                         <Label htmlFor="source" value="Source" />
                                     </div>
-                                    <TextInput defaultValue="" {...register("source", { required: true })} id="source" type="text" placeholder="Insert source here" required />
+                                    <TextInput
+                                        defaultValue=""
+                                        {...register("source", { required: false })}
+                                        id="source"
+                                        type="text"
+                                        placeholder="Insert source here"
+                                        color={"success"}
+                                        helperText={
+                                            getValues("source") == "" ? (
+                                                <>
+                                                    <span className="font-medium">It&apos;s fine</span>, this field can be empty. But it will better if you fill this field.
+                                                </>
+                                            ) : (getValues("source") ? getValues("source")?.length : 0) < 3 ? (
+                                                <>
+                                                    <span className="font-medium">It&apos;s fine</span>, but it will better if you give information with 3 character or more character.
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span className="font-medium">Alright</span> this is good.
+                                                </>
+                                            )
+                                        } />
                                 </div>
                             </div>
-                            <Button type="submit" disabled={isCompLoading ? true : false} onClick={() => setIsCompLoading(true)} >{isCompLoading ? (
+                            <Button type="submit" disabled={isCompLoading ? true : false}>{isCompLoading ? (
                                 <>
                                     <Spinner aria-label="Spinner loading" size="sm" />
                                     <span className="pl-3">Loading...</span>
