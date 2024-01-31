@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Button, Checkbox, CustomFlowbiteTheme, Spinner, Table, TextInput } from 'flowbite-react'
+import { Button, Checkbox, CustomFlowbiteTheme, Dropdown, Spinner, Table, TextInput } from 'flowbite-react'
 import { HiPencil, HiOutlineTrash } from "react-icons/hi";
 import { PersonalityInfo } from '../../_interfaces/PersonalityInfo';
 import swal from 'sweetalert';
@@ -22,6 +22,16 @@ const tableTheme: CustomFlowbiteTheme['table'] = {
         cell: {
             base: "bg-gray-50 dark:bg-gray-700 px-6 py-3 hover:cursor-pointer"
         }
+    }
+}
+
+const dropdownTheme: CustomFlowbiteTheme['dropdown'] = {
+    floating: {
+        style: {
+            dark: "bg-gray-900 text-white dark:bg-gray-700",
+            light: "border border-gray-200 bg-white text-gray-900",
+            auto: "border border-gray-200 bg-white text-gray-900 dark:border-none dark:bg-gray-700 dark:text-white"
+        },
     }
 }
 
@@ -48,6 +58,8 @@ const PersonalityInfoTable: React.FC = () => {
     const [checkboxFilteredKeys, setCheckboxFilteredKeys] = useState<string[]>([])
     const [sortConfig, setSortConfig] = useState<{ key: keyof PersonalityInfo; direction: 'asc' | 'desc' } | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const [itemsPerPage, setItemsPerPage] = useState(5)
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         handleFilterCheckbox(checkboxState)
@@ -179,6 +191,10 @@ const PersonalityInfoTable: React.FC = () => {
         setSearchTerm(e.target.value);
     };
 
+    function goToPage(pageNumber: number) {
+        setCurrentPage(pageNumber);
+    };
+
     // component
     const SortableHeader: React.FC<SortableHeaderProps> = ({ columnKey, columnName, sortConfig, handleSorting }) => {
         const isSorted = sortConfig && sortConfig.key === columnKey;
@@ -257,6 +273,12 @@ const PersonalityInfoTable: React.FC = () => {
         row.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentData = filteredData.slice(startIndex, endIndex);
+
+
     return (
         <>
             <div className='p-4 flex flex-row justify-between items-center bg-white dark:bg-gray-800'>
@@ -264,7 +286,9 @@ const PersonalityInfoTable: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3">
                     <Button onClick={() => {
                         handleMultipleDelete()
-                    }} color="failure">Delete selected</Button>
+                    }}
+                        disabled={checkboxFilteredKeys.length == 0 ? true : false}
+                        color="failure">Delete selected</Button>
                     <Button disabled={loading ? true : false} onClick={() => {
                         startLoading()
                         router.push(`${pathname}/add/`
@@ -314,8 +338,8 @@ const PersonalityInfoTable: React.FC = () => {
                     <Table.HeadCell colSpan={2}>Action</Table.HeadCell>
                 </Table.Head>
                 <Table.Body className="divide-y">
-                    {filteredData?.length != 0 ? (
-                        filteredData?.map((info, index) => {
+                    {currentData?.length != 0 ? (
+                        currentData?.map((info, index) => {
                             return (
                                 <TableRow key={index} pathname={pathname} info={info} token={token} />
                             )
@@ -332,6 +356,31 @@ const PersonalityInfoTable: React.FC = () => {
                     )}
                 </Table.Body>
             </Table>
+            <div className='w-full flex justify-between items-center my-4 px-8 bg-white dark:bg-gray-800'>
+                <p>Showing {itemsPerPage} of {filteredData.length} entries</p>
+                <div className="flex overflow-x-auto sm:justify-end gap-4">
+                    <Dropdown size="sm" dismissOnClick={false} label="" renderTrigger={() => <Button color='light'>Show item per table: {itemsPerPage}</Button>}>
+                        <Dropdown.Item onClick={() => { setItemsPerPage(5) }}>5</Dropdown.Item>
+                        <Dropdown.Item onClick={() => { setItemsPerPage(25) }}>25</Dropdown.Item>
+                        <Dropdown.Item onClick={() => { setItemsPerPage(100) }}>100</Dropdown.Item>
+                    </Dropdown>
+                </div>
+            </div>
+            <nav className='w-full flex justify-center items-center mx-auto my-4 px-8' aria-label="Pagination">
+                <ul className="relative inline-flex -space-x-px text-sm gap-2">
+                    {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
+                        <li key={pageNumber}>
+                            <button
+                                onClick={() => goToPage(pageNumber)}
+                                disabled={currentPage === pageNumber}
+                                className="relative flex items-center justify-center p-5 h-8 rounded-lg leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                            >
+                                {pageNumber}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </nav>
         </>
 
     )
