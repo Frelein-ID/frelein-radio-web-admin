@@ -1,24 +1,24 @@
-'use client'
+"use client"
 
 import { Breadcrumb, Button, Label, TextInput, Textarea, Datepicker, Select, Spinner } from 'flowbite-react'
 import React, { useEffect, useState } from 'react'
 import { HiHome } from "react-icons/hi";
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { PersonalityInfo } from '@/app/_interfaces/PersonalityInfo';
-import { createPersonalityInfo, getPersonalityInfoByID, updatePersonalityInfo } from '@/app/_services/PersonalityServices';
+import { getPersonalityInfoByID, updatePersonalityInfo } from '@/app/_services/PersonalityServices';
 import AdminLayout from '../../../adminLayout';
 import swal from 'sweetalert';
 import { useRouter } from 'next/navigation';
 import { Response } from '@/app/_interfaces/Response';
 import moment from 'moment';
 import { loadDataFromStorage } from '@/app/_utils/auth-utils';
-import Skeleton from 'react-loading-skeleton';
+import { useLoading } from '@/app/_context/loadingContext';
 
 const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
     const router = useRouter()
     const [token, setToken] = useState("")
+    const { stopLoading, startLoading } = useLoading()
     const [personalityInfo, setPersonalityInfo] = useState<PersonalityInfo | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
     const [isCompLoading, setIsCompLoading] = useState(false)
 
     const {
@@ -38,16 +38,17 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
         if (token) {
             const fetchData = async () => {
                 try {
-                    const data = await getPersonalityInfoByID(params.id, token)
-                    setPersonalityInfo(data.data)
-                    setIsLoading(false)
+                    await getPersonalityInfoByID(params.id, token).then((data) => {
+                        setPersonalityInfo(data.data)
+                        stopLoading()
+                    })
                 } catch (error) {
                     throw error
                 }
             }
             fetchData()
         }
-    }, [params.id])
+    }, [params.id, stopLoading])
 
     useEffect(() => {
         if (personalityInfo !== null) {
@@ -74,12 +75,12 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
                 text: "Personality data has been updated",
                 icon: "success",
             }).then((result) => {
-                if (result) {
-                    router.back()
+                if (result || null) {
+                    router.push("/admin/personality-info")
                 }
             })
         } else {
-            console.log(response?.status)
+            setIsCompLoading(false)
             swal({
                 title: "Error",
                 text: response?.message,
@@ -87,7 +88,8 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
             })
         }
     }
-    console.log(watch())
+
+    watch()
 
     return (
         <AdminLayout>
@@ -95,13 +97,19 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
                 <h1>Edit Personality Information</h1>
             </div>
             <div className="mb-6">
-                <Breadcrumb aria-label="Default breadcrumb example">
-                    <Breadcrumb.Item href="/admin/dashboard" icon={HiHome}>
+                <Breadcrumb aria-label="Personality information breadcrumb">
+                    <Breadcrumb.Item href="#" onClick={() => {
+                        startLoading()
+                        router.push("/admin/dashboard")
+                    }} icon={HiHome}>
                         Dashboard
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>Personality</Breadcrumb.Item>
-                    <Breadcrumb.Item href="/admin/personality-info">Information</Breadcrumb.Item>
-                    <Breadcrumb.Item>Edit information</Breadcrumb.Item>
+                    <Breadcrumb.Item href="#" onClick={() => {
+                        startLoading()
+                        router.push("/admin/personality-info")
+                    }}>Information</Breadcrumb.Item>
+                    <Breadcrumb.Item>Edit</Breadcrumb.Item>
                 </Breadcrumb>
             </div>
             <div className="mb-6 bg-white dark:bg-gray-700 p-6 rounded-lg">

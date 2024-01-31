@@ -1,7 +1,7 @@
 "use client"
 
-import React from 'react'
-import { Button, Label, TextInput } from 'flowbite-react'
+import React, { useEffect, useState } from 'react'
+import { Button, Label, Spinner, TextInput } from 'flowbite-react'
 import Link from 'next/link'
 import { useForm, SubmitHandler } from "react-hook-form"
 import { login } from '../_services/AuthServices'
@@ -10,23 +10,31 @@ import { useRouter } from 'next/navigation'
 import { storeDataToStoage } from '../_utils/auth-utils'
 import { Response } from '../_interfaces/Response'
 import { NextSeo } from 'next-seo'
+import { useLoading } from '../_context/loadingContext'
 
 const LoginPage = () => {
     const router = useRouter()
+    const { loading, stopLoading, startLoading } = useLoading()
+
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<Users>()
+
     const onSubmit: SubmitHandler<Users> = async (data) => {
+        startLoading()
         const response: Response = await login(data)
-        console.log({ response })
         const token: string = response?.data?.token
         const userId: string = response?.data?.id
         storeDataToStoage(token, "token")
         storeDataToStoage(userId, "userId")
         router.push("/admin/dashboard")
     }
+
+    useEffect(() => {
+        stopLoading()
+    }, [stopLoading])
     return (
         <>
             <NextSeo
@@ -60,7 +68,12 @@ const LoginPage = () => {
                                         Forgot password?
                                     </Link>
                                 </div>
-                                <Button className='w-full' color="blue" type="submit">Submit</Button>
+                                <Button className='w-full' color="blue" disabled={loading ? true : false} type="submit">{loading ? (
+                                    <>
+                                        <Spinner aria-label="Spinner loading" size="sm" />
+                                        <span className="pl-3">Loading...</span>
+                                    </>
+                                ) : "Submit"}</Button>
                             </form>
                         </div>
                     </div>

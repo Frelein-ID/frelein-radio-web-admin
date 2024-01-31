@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { NextSeo } from 'next-seo'
 import { redirect } from 'next/navigation'

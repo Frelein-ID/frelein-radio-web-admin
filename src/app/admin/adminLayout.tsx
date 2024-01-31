@@ -1,19 +1,26 @@
+"use client"
+
 import '../globals.css'
 import Header from '../_components/layouts/header';
 import CustomSidebar from '../_components/layouts/sidebar';
 import Container from '../_components/layouts/container';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { CheckUserIsLogin } from '../_utils/auth-utils';
+import { LoadingProvider, useLoading } from '../_context/loadingContext';
+import Loading from '../_components/layouts/loading';
 
 const AdminLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     const router = useRouter()
+    const { loading } = useLoading();
+
     useEffect(() => {
         const isUserLoggedIn = CheckUserIsLogin()
         if (!isUserLoggedIn) {
             router.push("/login")
         }
     }, [router])
+
     return (
         <>
             <Header></Header>
@@ -21,9 +28,13 @@ const AdminLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => 
                 <aside className='min-h-screen'>
                     <CustomSidebar></CustomSidebar>
                 </aside>
-                <Container>
-                    {children}
-                </Container>
+                {loading ? (
+                    <Loading />
+                ) : (
+                    <Container>
+                        {children}
+                    </Container>
+                )}
             </div>
         </>
     );

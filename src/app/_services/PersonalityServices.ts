@@ -17,9 +17,8 @@ export const createPersonalityInfo = async (
       },
     });
     return response.data;
-  } catch (error) {
-    console.error("Error creating personality info:", error);
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 

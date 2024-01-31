@@ -1,9 +1,8 @@
-'use client'
+"use client"
 
 import React from 'react'
 import { usePathname } from 'next/navigation'
 import { Badge, Button, Checkbox, CustomFlowbiteTheme, Table } from 'flowbite-react'
-import Skeleton from 'react-loading-skeleton';
 import { HiPencil, HiOutlineTrash } from "react-icons/hi";
 import swal from 'sweetalert';
 import { WARNING_SUBTITLE, WARNING_TITLE } from '@/app/_constants/constants';
@@ -64,9 +63,9 @@ const TableRow = (
             </Table.Cell>
             <Table.Cell className="max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
                 {data.info.role == "admin" ? (
-                    <Badge theme={badgeTheme} color="success">{data.info.role || <Skeleton />}</Badge>
+                    <Badge theme={badgeTheme} color="success">{data.info.role}</Badge>
                 ) : (
-                    <Badge theme={badgeTheme} color="info">{data.info.role || <Skeleton />}</Badge>
+                    <Badge theme={badgeTheme} color="info">{data.info.role}</Badge>
                 )}
             </Table.Cell>
             <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{data.info.username}</Table.Cell>

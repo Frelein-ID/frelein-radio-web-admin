@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import React, { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
@@ -11,11 +11,11 @@ import moment from 'moment';
 import { deletePersonalityInfo, getAllPersonalityInfo } from '@/app/_services/PersonalityServices';
 import Lottie from 'lottie-react';
 import emptyAnimation from "@/app/_animations/empty.json"
-import loadingAnimation from "@/app/_animations/loading.json"
 import Image from 'next/image';
 import { Response } from '@/app/_interfaces/Response';
 import { loadDataFromStorage } from '@/app/_utils/auth-utils';
 import { HiSearch } from "react-icons/hi";
+import { useLoading } from '@/app/_context/loadingContext';
 
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
@@ -41,10 +41,9 @@ interface SortableHeaderProps {
 const PersonalityInfoTable: React.FC = () => {
     const pathname = usePathname()
     const router = useRouter()
+    const { loading, startLoading, stopLoading } = useLoading()
     const [checkboxState, setCheckboxState] = useState<{ [key: string]: 'checked' | 'unchecked' | 'indeterminate' }>({});
     const [token, setToken] = useState<string>("")
-    const [isLoading, setIsLoading] = useState(true)
-    const [isCompLoading, setIsCompLoading] = useState(false)
     const [personalityInfo, setPersonalityInfo] = useState<PersonalityInfo[]>([])
     const [checkboxFilteredKeys, setCheckboxFilteredKeys] = useState<string[]>([])
     const [sortConfig, setSortConfig] = useState<{ key: keyof PersonalityInfo; direction: 'asc' | 'desc' } | null>(null);
@@ -185,10 +184,10 @@ const PersonalityInfoTable: React.FC = () => {
         const isSorted = sortConfig && sortConfig.key === columnKey;
 
         return (
-            <th onClick={() => handleSorting(columnKey)}>
+            <Table.HeadCell onClick={() => handleSorting(columnKey)}>
                 {columnName}
                 {isSorted && (sortConfig?.direction === 'asc' ? ' ▲' : ' ▼')}
-            </th>
+            </Table.HeadCell>
         );
     };
 
@@ -223,7 +222,10 @@ const PersonalityInfoTable: React.FC = () => {
                 <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{moment(data.info?.createdAt).fromNow()}</Table.Cell>
                 <Table.Cell className='max-w-52 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{moment(data.info?.updatedAt).fromNow()}</Table.Cell>
                 <Table.Cell>
-                    <Button href={`${data.pathname}/edit/${data.info?.id}`} color='blue'>
+                    <Button onClick={() => {
+                        startLoading()
+                        router.push(`${data.pathname}/edit/${data.info?.id}`)
+                    }} color='blue'>
                         <HiPencil className='text-white' />
                     </Button>
                 </Table.Cell>
@@ -245,11 +247,11 @@ const PersonalityInfoTable: React.FC = () => {
             } catch (error) {
                 console.log(error)
             } finally {
-                setIsLoading(false)
+                stopLoading()
             }
         }
         fetchData()
-    }, [token])
+    }, [stopLoading, token])
 
     const filteredData = sortedData().filter((row) =>
         row.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -257,94 +259,79 @@ const PersonalityInfoTable: React.FC = () => {
 
     return (
         <>
-            {isLoading ? (
-                <div className='w-full h-full flex justify-center items-center'>
-                    <Lottie animationData={loadingAnimation} />
+            <div className='p-4 flex flex-row justify-between items-center bg-white dark:bg-gray-800'>
+                <TextInput id="search-table" type="text" value={searchTerm} onChange={handleSearch} icon={HiSearch} placeholder="Search here..." />
+                <div className="grid grid-cols-2 gap-3">
+                    <Button onClick={() => {
+                        handleMultipleDelete()
+                    }} color="failure">Delete selected</Button>
+                    <Button disabled={loading ? true : false} onClick={() => {
+                        startLoading()
+                        router.push(`${pathname}/add/`
+                        )
+                    }} color="success">{loading ? (
+                        <>
+                            <Spinner aria-label="Spinner loading" size="sm" />
+                            <span className="pl-3">Loading...</span>
+                        </>) : "Add new"}</Button>
                 </div>
-            ) : (
-                <>
-                    <div className='p-4 flex flex-row justify-between items-center bg-white dark:bg-gray-800'>
-                        <TextInput id="search-table" type="text" value={searchTerm} onChange={handleSearch} icon={HiSearch} placeholder="Search here..." />
-                        <div className="grid grid-cols-2 gap-3">
-                            <Button onClick={() => {
-                                handleMultipleDelete()
-                            }} color="failure">Delete selected</Button>
-                            <Button disabled={isCompLoading ? true : false} onClick={() => {
-                                setIsCompLoading(true)
-                                router.push(`${pathname}/add/`)
-                            }} color="success">{isCompLoading ? (
-                                <>
-                                    <Spinner aria-label="Spinner loading" size="sm" />
-                                    <span className="pl-3">Loading...</span>
-                                </>) : "Add new"}</Button>
-                        </div>
-                    </div>
-                    <Table theme={tableTheme}>
-                        <Table.Head>
-                            <Table.HeadCell className="p-4">
-                                <Checkbox
-                                    checked={checkboxState.allState === 'checked'}
-                                    onChange={() => {
-                                        handleAllCheckboxChange()
-                                    }}
-                                />
-                            </Table.HeadCell>
-                            <Table.HeadCell>Image</Table.HeadCell>
-                            <Table.HeadCell>
-                                <SortableHeader
-                                    columnKey='name'
-                                    columnName="Name"
-                                    sortConfig={sortConfig}
-                                    handleSorting={handleSorting}
-                                />
-                            </Table.HeadCell>
-                            <Table.HeadCell>
-                                <SortableHeader
-                                    columnKey='favoritedBy'
-                                    columnName="Favorited By"
-                                    sortConfig={sortConfig}
-                                    handleSorting={handleSorting}
-                                />
-                            </Table.HeadCell>
-                            <Table.HeadCell>
-                                <SortableHeader
-                                    columnKey='createdAt'
-                                    columnName="Added"
-                                    sortConfig={sortConfig}
-                                    handleSorting={handleSorting}
-                                />
-                            </Table.HeadCell>
-                            <Table.HeadCell>
-                                <SortableHeader
-                                    columnKey='updatedAt'
-                                    columnName="Updated"
-                                    sortConfig={sortConfig}
-                                    handleSorting={handleSorting}
-                                />
-                            </Table.HeadCell>
-                            <Table.HeadCell colSpan={2}>Action</Table.HeadCell>
-                        </Table.Head>
-                        <Table.Body className="divide-y">
-                            {filteredData?.length != 0 ? (
-                                filteredData?.map((info, index) => {
-                                    return (
-                                        <TableRow key={index} pathname={pathname} info={info} token={token} />
-                                    )
-                                })
-                            ) : (
-                                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                                    <Table.Cell colSpan={8}>
-                                        <div className="flex flex-col text-center justify-center items-center">
-                                            <Lottie className='w-96 h-96' animationData={emptyAnimation} />
-                                            <h3 className='mb-3'>Not Found</h3>
-                                        </div>
-                                    </Table.Cell>
-                                </Table.Row>
-                            )}
-                        </Table.Body>
-                    </Table>
-                </>
-            )}
+            </div>
+            <Table theme={tableTheme}>
+                <Table.Head>
+                    <Table.HeadCell className="p-4">
+                        <Checkbox
+                            checked={checkboxState.allState === 'checked'}
+                            onChange={() => {
+                                handleAllCheckboxChange()
+                            }}
+                        />
+                    </Table.HeadCell>
+                    <Table.HeadCell>Image</Table.HeadCell>
+                    <SortableHeader
+                        columnKey='name'
+                        columnName="Name"
+                        sortConfig={sortConfig}
+                        handleSorting={handleSorting}
+                    />
+                    <SortableHeader
+                        columnKey='favoritedBy'
+                        columnName="Favorited By"
+                        sortConfig={sortConfig}
+                        handleSorting={handleSorting}
+                    />
+                    <SortableHeader
+                        columnKey='createdAt'
+                        columnName="Added"
+                        sortConfig={sortConfig}
+                        handleSorting={handleSorting}
+                    />
+                    <SortableHeader
+                        columnKey='updatedAt'
+                        columnName="Updated"
+                        sortConfig={sortConfig}
+                        handleSorting={handleSorting}
+                    />
+                    <Table.HeadCell colSpan={2}>Action</Table.HeadCell>
+                </Table.Head>
+                <Table.Body className="divide-y">
+                    {filteredData?.length != 0 ? (
+                        filteredData?.map((info, index) => {
+                            return (
+                                <TableRow key={index} pathname={pathname} info={info} token={token} />
+                            )
+                        })
+                    ) : (
+                        <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                            <Table.Cell colSpan={8}>
+                                <div className="flex flex-col text-center justify-center items-center">
+                                    <Lottie className='w-96 h-96' animationData={emptyAnimation} />
+                                    <h3 className='mb-3'>Not Found</h3>
+                                </div>
+                            </Table.Cell>
+                        </Table.Row>
+                    )}
+                </Table.Body>
+            </Table>
         </>
 
     )

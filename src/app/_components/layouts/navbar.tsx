@@ -1,13 +1,12 @@
-'use client'
+"use client"
 
 import { Avatar, Button, Dropdown, Navbar, DarkThemeToggle, CustomFlowbiteTheme } from 'flowbite-react'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Users } from '@/app/_interfaces/Users'
-import { getAdminData } from '@/app/_services/AdminServices'
 import { VerifyUser, removeDataFromStorage } from '@/app/_utils/auth-utils'
-import Skeleton from 'react-loading-skeleton'
+import { useLoading } from '@/app/_context/loadingContext'
 
 const avatarTheme: CustomFlowbiteTheme['avatar'] = {
     root: {
@@ -31,10 +30,12 @@ const navbarTheme: CustomFlowbiteTheme['navbar'] = {
 
 const CustomNavbar = () => {
     const router = useRouter()
+    const { startLoading } = useLoading()
     const [user, setUser] = useState<Users | null>(null)
     const handleSignOut = () => {
         removeDataFromStorage("token")
         removeDataFromStorage("userId")
+        startLoading()
         router.push("/login")
     }
     useEffect(() => {
@@ -65,8 +66,8 @@ const CustomNavbar = () => {
                             }
                         >
                             <Dropdown.Header>
-                                <span className="block text-sm">{user?.name || <Skeleton />}</span>
-                                <span className="block truncate text-sm font-medium">{user?.email || <Skeleton />}</span>
+                                <span className="block text-sm">{user?.name}</span>
+                                <span className="block truncate text-sm font-medium">{user?.email}</span>
                             </Dropdown.Header>
                             <Dropdown.Item>Settings</Dropdown.Item>
                             <Dropdown.Divider />
