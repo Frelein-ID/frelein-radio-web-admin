@@ -1,22 +1,21 @@
 "use client"
 
-import { Breadcrumb, Button, Label, TextInput, Textarea, Datepicker, Select, Spinner } from 'flowbite-react'
+import { Breadcrumb, Button, Label, Spinner, TextInput, Textarea } from 'flowbite-react'
 import React, { useEffect, useState } from 'react'
 import { HiHome } from "react-icons/hi";
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { PersonalityInfo } from '@/app/_interfaces/PersonalityInfo';
-import { getPersonalityInfoByID, updatePersonalityInfo } from '@/app/_services/PersonalityServices';
 import AdminLayout from '../../../adminLayout';
-import swal from 'sweetalert';
 import { useRouter } from 'next/navigation';
-import { Response } from '@/app/_interfaces/Response';
-import moment from 'moment';
+import { RadioInfo } from '@/app/_interfaces/RadioInfo';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { getRadioInfoByID, updateRadioInfo } from '@/app/_services/RadioInfoServices';
+import swal from 'sweetalert';
 import { useLoading } from '@/app/_context/loadingContext';
+import { Response } from '@/app/_interfaces/Response';
 
-const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
+const RadioInfoEditPage = ({ params }: { params: { id: string } }) => {
     const router = useRouter()
     const { stopLoading, startLoading } = useLoading()
-    const [personalityInfo, setPersonalityInfo] = useState<PersonalityInfo | null>(null)
+    const [radioInfo, setRadioInfo] = useState<RadioInfo | null>(null)
     const [isCompLoading, setIsCompLoading] = useState(false)
 
     const {
@@ -26,15 +25,14 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
         setValue,
         getValues,
         formState: { errors },
-    } = useForm<PersonalityInfo>()
-    register('birthdate', { required: true });
+    } = useForm<RadioInfo>()
 
     useEffect(() => {
         setIsCompLoading(false)
         const fetchData = async () => {
             try {
-                await getPersonalityInfoByID(params.id).then((data) => {
-                    setPersonalityInfo(data.data)
+                await getRadioInfoByID(params.id).then((data) => {
+                    setRadioInfo(data.data)
                     stopLoading()
                 })
             } catch (error) {
@@ -45,32 +43,30 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
     }, [params.id, stopLoading])
 
     useEffect(() => {
-        if (personalityInfo !== null) {
-            setValue("name", personalityInfo?.name)
-            setValue("name_jp", personalityInfo?.name_jp)
-            setValue("nickname", personalityInfo?.nickname)
-            setValue("birthdate", moment().format(personalityInfo?.birthdate))
-            setValue("birthplace", personalityInfo?.birthplace)
-            setValue("bloodtype", personalityInfo?.bloodtype)
-            setValue("description", personalityInfo?.description)
-            setValue("image", personalityInfo?.image)
-            setValue("source", personalityInfo?.source)
+        if (radioInfo !== null) {
+            setValue("name", radioInfo?.name)
+            setValue("name_jp", radioInfo?.name_jp)
+            setValue("image", radioInfo?.image)
+            setValue("description", radioInfo?.description)
+            setValue("website", radioInfo?.website)
+            setValue("social", radioInfo?.social)
+            setValue("schedule", radioInfo?.schedule)
+            setValue("start_time", radioInfo?.start_time)
         }
-    }, [personalityInfo, setValue])
+    }, [radioInfo, setValue])
 
-    const onSubmit: SubmitHandler<PersonalityInfo> = async (data) => {
+    const onSubmit: SubmitHandler<RadioInfo> = async (data) => {
         setIsCompLoading(true)
-        const response: Response = await updatePersonalityInfo(params.id, data)
-        console.log({ response })
-        if (response?.status == 200) {
+        const response: Response = await updateRadioInfo(params.id, data)
+        if (response?.status === 200) {
             setIsCompLoading(false)
             swal({
                 title: "Success!",
-                text: "Personality data has been updated",
+                text: "Radio data has been updated",
                 icon: "success",
             }).then((result) => {
-                if (result || null) {
-                    router.push("/admin/personality-info")
+                if (result) {
+                    router.push("/admin/radio-info")
                 }
             })
         } else {
@@ -83,27 +79,30 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
         }
     }
 
-    watch()
+    useEffect(() => {
+        stopLoading()
+        watch()
+    }, [stopLoading, watch])
 
     return (
         <AdminLayout>
             <div className="mb-6">
-                <h1>Edit Personality Information</h1>
+                <h1>Add New Radio Information</h1>
             </div>
             <div className="mb-6">
-                <Breadcrumb aria-label="Personality information breadcrumb">
+                <Breadcrumb aria-label="Radio information breadcrumb">
                     <Breadcrumb.Item href="#" onClick={() => {
                         startLoading()
                         router.push("/admin/dashboard")
                     }} icon={HiHome}>
                         Dashboard
                     </Breadcrumb.Item>
-                    <Breadcrumb.Item>Personality</Breadcrumb.Item>
+                    <Breadcrumb.Item>Radio</Breadcrumb.Item>
                     <Breadcrumb.Item href="#" onClick={() => {
                         startLoading()
-                        router.push("/admin/personality-info")
+                        router.push("/admin/radio-info")
                     }}>Information</Breadcrumb.Item>
-                    <Breadcrumb.Item>Edit</Breadcrumb.Item>
+                    <Breadcrumb.Item>Add</Breadcrumb.Item>
                 </Breadcrumb>
             </div>
             <div className="mb-6 bg-white dark:bg-gray-700 p-6 rounded-lg">
@@ -114,10 +113,12 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
                                 <Label htmlFor="name" value="Name" />
                             </div>
                             <TextInput
+                                defaultValue=""
                                 {...register("name", {
                                     required: true,
                                     minLength: 3,
                                     maxLength: 255,
+                                    pattern: /([A-Za-z]+( [A-Za-z]+)+)/,
                                 })}
                                 id="name"
                                 type="text"
@@ -146,14 +147,14 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
                         </div>
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="name_jp" value="Name (Kanji)" />
+                                <Label htmlFor="name_jp" value="Name (In Japanese)" />
                             </div>
                             <TextInput
-                                {...register("name_jp", { required: false })}
                                 defaultValue=""
+                                {...register("name_jp")}
                                 id="name_jp"
                                 type="text"
-                                placeholder="Insert the Japanese name here"
+                                placeholder="Insert name in Japanese here"
                                 color={"success"}
                                 helperText={
                                     getValues("name_jp") == "" ? (
@@ -174,125 +175,11 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
                         </div>
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="nickname" value="Nickname" />
-                            </div>
-                            <TextInput
-                                {...register("nickname", { required: false, })}
-                                defaultValue=""
-                                id="nickname"
-                                type="text"
-                                placeholder="Insert nickname here"
-                                color={"success"}
-                                helperText={
-                                    getValues("nickname") == "" ? (
-                                        <>
-                                            <span className="font-medium">It&apos;s fine</span>, this field can be empty. But it will better if you fill this field.
-                                        </>
-                                    ) : (getValues("nickname") ? getValues("nickname")?.length : 0) < 3 ? (
-                                        <>
-                                            <span className="font-medium">It&apos;s fine</span>, but it will better if you give information with 3 character or more character.
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span className="font-medium">Alright</span> this is good.
-                                        </>
-                                    )
-                                }
-                            />
-                        </div>
-                        <div>
-                            <div className="mb-2 block">
-                                <Label htmlFor="birthdate" value="Birthdate" />
-                            </div>
-                            <Datepicker
-                                id="birthdate"
-                                type='text'
-                                placeholder='Insert birthdate here'
-                                onSelectedDateChanged={
-                                    (e) => {
-                                        const year = e.getFullYear()
-                                        const month = (e.getMonth() + 1).toString().padStart(2, '0');
-                                        const day = e.getDate().toString().padStart(2, '0');
-                                        setValue('birthdate', `${year}-${month}-${day}`)
-                                    }
-                                }
-                                color={
-                                    getValues("birthdate") == "" ? "failure" : "success"
-                                }
-                                helperText={
-                                    getValues("birthdate") == "" ? (
-                                        <>
-                                            Please set <span className="font-medium">Birthdate</span> properly.
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span className="font-medium">Alright</span> this is good.
-                                        </>
-                                    )
-                                } />
-                        </div>
-                        <div>
-                            <div className="mb-2 block">
-                                <Label htmlFor="birthplace" value="Birthplace" />
-                            </div>
-                            <TextInput
-                                {...register("birthplace", { required: false })}
-                                defaultValue=""
-                                id="birthplace"
-                                type="text"
-                                placeholder="Insert birthplace here"
-                                color={"success"}
-                                helperText={
-                                    getValues("birthplace") == "" ? (
-                                        <>
-                                            <span className="font-medium">It&apos;s fine</span>, this field can be empty. But it will better if you fill this field.
-                                        </>
-                                    ) : (getValues("birthplace") ? getValues("birthplace")?.length : 0) < 3 ? (
-                                        <>
-                                            <span className="font-medium">It&apos;s fine</span>, but it will better if you give information with 3 character or more character.
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span className="font-medium">Alright</span> this is good.
-                                        </>
-                                    )
-                                } />
-                        </div>
-                        <div>
-                            <div className="mb-2 block">
-                                <Label htmlFor="bloodtype" value="Bloodtype" />
-                            </div>
-                            <Select
-                                {...register("bloodtype", { required: false })}
-                                id="bloodtype"
-                                color={
-                                    getValues("bloodtype") === "A" || "B" || "O" || "AB" ? "success" : "failure"
-                                }
-                                helperText={
-                                    getValues("bloodtype") === "A" || "B" || "O" || "AB" ? (
-                                        <>
-                                            <span className="font-medium">Alright</span> this is good.
-                                        </>
-                                    ) : (
-                                        <>
-                                            Please set <span className="font-medium">Bloodtype</span> properly.
-                                        </>
-                                    )
-                                }
-                            >
-                                <option>A</option>
-                                <option>B</option>
-                                <option>AB</option>
-                                <option>O</option>
-                            </Select>
-                        </div>
-                        <div>
-                            <div className="mb-2 block">
                                 <Label htmlFor="image" value="Image url" />
                             </div>
                             <TextInput
-                                {...register("image", { required: false })}
                                 defaultValue=""
+                                {...register("image")}
                                 id="image"
                                 type="text"
                                 placeholder="Insert image url here"
@@ -311,7 +198,8 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
                                             <span className="font-medium">Alright</span> this is good.
                                         </>
                                     )
-                                } />
+                                }
+                            />
                         </div>
                         <div>
                             <div className="mb-2 block">
@@ -319,7 +207,7 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
                             </div>
                             <Textarea
                                 defaultValue=""
-                                {...register("description", { required: false })}
+                                {...register("description")}
                                 id="description"
                                 placeholder="Insert description here"
                                 rows={4}
@@ -338,25 +226,26 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
                                             <span className="font-medium">Alright</span> this is good.
                                         </>
                                     )
-                                } />
+                                }
+                            />
                         </div>
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="source" value="Source" />
+                                <Label htmlFor="website" value="Official website" />
                             </div>
                             <TextInput
                                 defaultValue=""
-                                {...register("source", { required: false })}
-                                id="source"
+                                {...register("website")}
+                                id="website"
                                 type="text"
-                                placeholder="Insert source here"
+                                placeholder="Insert official website here"
                                 color={"success"}
                                 helperText={
-                                    getValues("source") == "" ? (
+                                    getValues("website") == "" ? (
                                         <>
                                             <span className="font-medium">It&apos;s fine</span>, this field can be empty. But it will better if you fill this field.
                                         </>
-                                    ) : (getValues("source") ? getValues("source")?.length : 0) < 3 ? (
+                                    ) : (getValues("website") ? getValues("website")?.length : 0) < 3 ? (
                                         <>
                                             <span className="font-medium">It&apos;s fine</span>, but it will better if you give information with 3 character or more character.
                                         </>
@@ -365,7 +254,92 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
                                             <span className="font-medium">Alright</span> this is good.
                                         </>
                                     )
-                                } />
+                                }
+                            />
+                        </div>
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="social" value="Social media link" />
+                            </div>
+                            <TextInput
+                                defaultValue=""
+                                {...register("social")}
+                                id="social"
+                                type="text"
+                                placeholder="Insert social media link here"
+                                color={"success"}
+                                helperText={
+                                    getValues("social") == "" ? (
+                                        <>
+                                            <span className="font-medium">It&apos;s fine</span>, this field can be empty. But it will better if you fill this field.
+                                        </>
+                                    ) : (getValues("social") ? getValues("social")?.length : 0) < 3 ? (
+                                        <>
+                                            <span className="font-medium">It&apos;s fine</span>, but it will better if you give information with 3 character or more character.
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="font-medium">Alright</span> this is good.
+                                        </>
+                                    )
+                                }
+                            />
+                        </div>
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="schedule" value="Schedule" />
+                            </div>
+                            <TextInput
+                                defaultValue=""
+                                {...register("schedule")}
+                                id="schedule"
+                                type="text"
+                                placeholder="Insert schedule here"
+                                color={"success"}
+                                helperText={
+                                    getValues("schedule") == "" ? (
+                                        <>
+                                            <span className="font-medium">It&apos;s fine</span>, this field can be empty. But it will better if you fill this field.
+                                        </>
+                                    ) : (getValues("schedule") ? getValues("schedule")?.length : 0) < 3 ? (
+                                        <>
+                                            <span className="font-medium">It&apos;s fine</span>, but it will better if you give information with 3 character or more character.
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="font-medium">Alright</span> this is good.
+                                        </>
+                                    )
+                                }
+                            />
+                        </div>
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="start_time" value="Start time" />
+                            </div>
+                            <TextInput
+                                defaultValue=""
+                                {...register("start_time")}
+                                id="start_time"
+                                type="text"
+                                placeholder="Insert start time here"
+                                color={"success"}
+                                helperText={
+                                    getValues("start_time") == "" ? (
+                                        <>
+                                            <span className="font-medium">It&apos;s fine</span>, this field can be empty. But it will better if you fill this field.
+                                        </>
+                                    ) : (getValues("start_time") ? getValues("start_time")?.length : 0) < 3 ? (
+                                        <>
+                                            <span className="font-medium">It&apos;s fine</span>, but it will better if you give information with 3 character or more character.
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="font-medium">Alright</span> this is good.
+                                        </>
+                                    )
+                                }
+                            />
                         </div>
                     </div>
                     <Button type="submit" disabled={isCompLoading ? true : false}>{isCompLoading ? (
@@ -380,4 +354,4 @@ const PersonalityInfoEditPage = ({ params }: { params: { id: string } }) => {
     )
 }
 
-export default PersonalityInfoEditPage
+export default RadioInfoEditPage

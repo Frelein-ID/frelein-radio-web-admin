@@ -10,12 +10,10 @@ import AdminLayout from '../../adminLayout';
 import swal from 'sweetalert';
 import { useRouter } from 'next/navigation';
 import { Response } from '@/app/_interfaces/Response';
-import { loadDataFromStorage } from '@/app/_utils/auth-utils';
 import { useLoading } from '@/app/_context/loadingContext';
 
 const PersonalityInfoAddPage = () => {
     const router = useRouter()
-    const [token, setToken] = useState("")
     const { stopLoading, startLoading } = useLoading()
     const [isCompLoading, setIsCompLoading] = useState(false)
 
@@ -42,15 +40,13 @@ const PersonalityInfoAddPage = () => {
     register('birthdate', { required: true });
 
     useEffect(() => {
-        const token = loadDataFromStorage("token")
-        setToken(token)
+        watch()
         stopLoading()
-    }, [stopLoading])
+    }, [stopLoading, watch])
 
     const onSubmit: SubmitHandler<PersonalityInfo> = async (data) => {
         setIsCompLoading(true)
-        const response: Response = await createPersonalityInfo(data, token)
-        console.log({ response })
+        const response: Response = await createPersonalityInfo(data)
         if (response?.status === 201) {
             setIsCompLoading(false)
             swal({
@@ -71,8 +67,6 @@ const PersonalityInfoAddPage = () => {
             })
         }
     }
-
-    watch()
 
     return (
         <AdminLayout>

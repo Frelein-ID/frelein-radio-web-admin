@@ -25,16 +25,6 @@ const tableTheme: CustomFlowbiteTheme['table'] = {
     }
 }
 
-const dropdownTheme: CustomFlowbiteTheme['dropdown'] = {
-    floating: {
-        style: {
-            dark: "bg-gray-900 text-white dark:bg-gray-700",
-            light: "border border-gray-200 bg-white text-gray-900",
-            auto: "border border-gray-200 bg-white text-gray-900 dark:border-none dark:bg-gray-700 dark:text-white"
-        },
-    }
-}
-
 interface TableRowProps {
     info: PersonalityInfo;
     pathname: string,
@@ -68,7 +58,6 @@ const PersonalityInfoTable: React.FC = () => {
     // function
     function handleSingleDelete(
         id: string,
-        token: string
     ) {
         swal({
             title: WARNING_TITLE,
@@ -78,14 +67,14 @@ const PersonalityInfoTable: React.FC = () => {
         })
             .then(async (willDelete) => {
                 if (willDelete) {
-                    const response: Response = await deletePersonalityInfo(id, token)
+                    const response: Response = await deletePersonalityInfo(id)
                     if (response?.status == 200) {
                         swal({
                             title: "Success!",
                             text: response?.message,
                             icon: "success",
                         })
-                        const newData = await getAllPersonalityInfo(token)
+                        const newData = await getAllPersonalityInfo()
                         setPersonalityInfo(newData.data)
                     } else {
                         swal({
@@ -108,8 +97,8 @@ const PersonalityInfoTable: React.FC = () => {
             .then(async (willDelete) => {
                 if (willDelete) {
                     for (var data of checkboxFilteredKeys) {
-                        await deletePersonalityInfo(data, token)
-                        const newData = await getAllPersonalityInfo(token)
+                        await deletePersonalityInfo(data)
+                        const newData = await getAllPersonalityInfo()
                         setCheckboxFilteredKeys(checkboxFilteredKeys.filter((item) => item !== data))
                         setPersonalityInfo(newData.data)
                     }
@@ -246,7 +235,7 @@ const PersonalityInfoTable: React.FC = () => {
                     </Button>
                 </Table.Cell>
                 <Table.Cell>
-                    <Button onClick={() => { handleSingleDelete(data.info?.id, data.token) }} color='failure'>
+                    <Button onClick={() => { handleSingleDelete(data.info?.id) }} color='failure'>
                         <HiOutlineTrash className='text-white' />
                     </Button>
                 </Table.Cell>
@@ -258,7 +247,7 @@ const PersonalityInfoTable: React.FC = () => {
         setToken(loadDataFromStorage("token"))
         const fetchData = async () => {
             try {
-                const response = await getAllPersonalityInfo(token)
+                const response = await getAllPersonalityInfo()
                 setPersonalityInfo(response?.data)
             } catch (error) {
                 console.log(error)

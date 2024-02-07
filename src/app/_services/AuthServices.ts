@@ -1,13 +1,11 @@
 "use client";
 
-import dotenv from "dotenv";
 import axios from "axios";
 import { Users } from "../_interfaces/Users";
 import { Response } from "../_interfaces/Response";
 
-dotenv.config();
-
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const accessToken = process.env.NEXT_PUBLIC_ACCESS_TOKEN || "";
 
 export const login = async (data: Users): Promise<Response> => {
   try {
@@ -21,6 +19,7 @@ export const login = async (data: Users): Promise<Response> => {
       },
       {
         headers: {
+          "Access-Token": accessToken,
           "Content-Type": "application/json",
         },
       }

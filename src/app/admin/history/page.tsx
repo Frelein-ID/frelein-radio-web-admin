@@ -26,18 +26,6 @@ const HistoryPage = () => {
     }, [])
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await getAllUser(token)
-                setUsers(response?.data)
-            } catch (error) {
-                console.log(error)
-            }
-        }
-        fetchData()
-    }, [token])
-
-    useEffect(() => {
         setLoading(false)
     }, [users])
 

@@ -67,10 +67,9 @@ const Dashboard = () => {
     const [registerChartLabel, setRegisterChartLabel] = useState<any>([])
 
     useEffect(() => {
-        const token = loadDataFromStorage("token")
         const fetchData = async () => {
             try {
-                await getStatistics(token).then((value) => {
+                await getStatistics().then((value) => {
                     setStatistic(value)
                     setLoginChartData(value.data.users_login_last_week.map((item: any) => item.value))
                     setLoginChartLabel(value.data.users_login_last_week.map((item: any) => item.date))

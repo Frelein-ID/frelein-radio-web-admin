@@ -17,7 +17,6 @@ export const removeDataFromStorage = (key: string): void => {
 export const CheckUserIsLogin = () => {
   const token = loadDataFromStorage("token");
   const id = loadDataFromStorage("userId");
-  console.log({ token, id });
   if (token !== "" && id !== "") {
     return true;
   } else {
@@ -27,9 +26,8 @@ export const CheckUserIsLogin = () => {
 
 export const VerifyUser = async (): Promise<Users | null> => {
   try {
-    const token = loadDataFromStorage("token");
     const id = loadDataFromStorage("userId");
-    const response = await getAdminData(token, id);
+    const response = await getAdminData(id);
     if (response.status != 200) {
       return null;
     } else {

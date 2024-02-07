@@ -2,17 +2,18 @@ import "dotenv/config";
 import axios from "axios";
 import { Users } from "../_interfaces/Users";
 import { Response } from "../_interfaces/Response";
+import { loadDataFromStorage } from "../_utils/auth-utils";
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const accessToken = process.env.NEXT_PUBLIC_ACCESS_TOKEN || "";
 
-export const getUserByID = async (
-  id: Promise<Users["id"]>,
-  token: string
-): Promise<Users> => {
+export const getUserByID = async (id: Promise<Users["id"]>): Promise<Users> => {
   try {
+    const token = loadDataFromStorage("token");
     const response = await axios.post(`${baseURL}/user/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
+        "Access-Token": accessToken,
       },
     });
     return response.data;
@@ -22,11 +23,13 @@ export const getUserByID = async (
   }
 };
 
-export const getAllUser = async (token: string): Promise<Response> => {
+export const getAllUser = async (): Promise<Response> => {
   try {
+    const token = loadDataFromStorage("token");
     const response = await axios.get(`${baseURL}/user`, {
       headers: {
         Authorization: `Bearer ${token}`,
+        "Access-Token": accessToken,
       },
     });
     return response.data;
@@ -38,13 +41,15 @@ export const getAllUser = async (token: string): Promise<Response> => {
 
 export const updateUser = async (
   id: string,
-  updatedData: Users,
-  token: string
+  updatedData: Users
 ): Promise<Users> => {
   try {
+    const token = loadDataFromStorage("token");
     const response = await axios.put(`${baseURL}/user/${id}`, updatedData, {
       headers: {
         Authorization: `Bearer ${token}`,
+        "Access-Token": accessToken,
+        "Content-Type": "application/json",
       },
     });
     return response.data;
@@ -54,11 +59,13 @@ export const updateUser = async (
   }
 };
 
-export const deleteUser = async (id: string, token: string): Promise<void> => {
+export const deleteUser = async (id: string): Promise<void> => {
   try {
+    const token = loadDataFromStorage("token");
     await axios.delete(`${baseURL}/user/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
+        "Access-Token": accessToken,
       },
     });
   } catch (error) {

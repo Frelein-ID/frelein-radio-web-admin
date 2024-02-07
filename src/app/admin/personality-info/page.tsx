@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Breadcrumb, } from 'flowbite-react'
 import { HiHome } from 'react-icons/hi'
 import PersonalityInfoTable from './table'
@@ -11,7 +11,12 @@ import { useLoading } from '@/app/_context/loadingContext'
 
 const PersonalityInfoPage = () => {
     const router = useRouter()
-    const { startLoading } = useLoading()
+    const { stopLoading, startLoading } = useLoading()
+
+    useEffect(() => {
+        stopLoading()
+    }, [stopLoading])
+
     return (
         <AdminLayout>
             <NextSeo
