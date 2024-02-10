@@ -9,7 +9,7 @@ const accessToken = process.env.NEXT_PUBLIC_ACCESS_TOKEN || "";
 
 export const createRadioTracks = async (
   newRadio: Omit<RadioTracks, "id">
-): Promise<RadioTracks> => {
+): Promise<Response> => {
   try {
     const token = loadDataFromStorage("token");
     const response = await axios.post(`${baseURL}/radio-tracks`, newRadio, {
@@ -20,9 +20,8 @@ export const createRadioTracks = async (
       },
     });
     return response.data;
-  } catch (error) {
-    console.error("Error creating radio tracks:", error);
-    throw error;
+  } catch (error: any) {
+    throw error.response.data;
   }
 };
 
@@ -36,16 +35,30 @@ export const getAllRadioTracks = async (): Promise<Response> => {
       },
     });
     return response.data;
-  } catch (error) {
-    console.log("Error fetching radio tracks:", error);
-    throw error;
+  } catch (error: any) {
+    throw error.response.data;
+  }
+};
+
+export const getRadioTracksByID = async (id: string): Promise<Response> => {
+  try {
+    const token = loadDataFromStorage("token");
+    const response = await axios.get(`${baseURL}/radio-tracks/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Access-Token": accessToken,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    throw error.response.data;
   }
 };
 
 export const updateRadioTracks = async (
   id: string,
   updatedRadio: RadioTracks
-): Promise<RadioTracks> => {
+): Promise<Response> => {
   try {
     const token = loadDataFromStorage("token");
     const response = await axios.put(
@@ -60,23 +73,25 @@ export const updateRadioTracks = async (
       }
     );
     return response.data;
-  } catch (error) {
-    console.error(`Error updating radio tracks with ID ${id}:`, error);
-    throw error;
+  } catch (error: any) {
+    throw error.response.data;
   }
 };
 
-export const deleteRadioTracks = async (id: string): Promise<void> => {
+export const deleteRadioTracks = async (id: string): Promise<Response> => {
   try {
     const token = loadDataFromStorage("token");
-    await axios.delete(`${baseURL}/radio-tracks/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Access-Token": accessToken,
-      },
-    });
-  } catch (error) {
-    console.log("Error deleting radio tracks:", error);
-    throw error;
+    const response: Response = await axios.delete(
+      `${baseURL}/radio-tracks/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Access-Token": accessToken,
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response.data;
   }
 };

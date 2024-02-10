@@ -26,7 +26,7 @@ const UsersPage = () => {
         setToken(loadDataFromStorage("token"))
         const fetchData = async () => {
             try {
-                const response = await getAllUser(token)
+                const response = await getAllUser()
                 setUsers(response?.data)
             } catch (error) {
                 console.log(error)

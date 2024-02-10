@@ -87,7 +87,7 @@ const RadioInfoEditPage = ({ params }: { params: { id: string } }) => {
     return (
         <AdminLayout>
             <div className="mb-6">
-                <h1>Add New Radio Information</h1>
+                <h1>Edit Radio Information</h1>
             </div>
             <div className="mb-6">
                 <Breadcrumb aria-label="Radio information breadcrumb">
@@ -102,7 +102,7 @@ const RadioInfoEditPage = ({ params }: { params: { id: string } }) => {
                         startLoading()
                         router.push("/admin/radio-info")
                     }}>Information</Breadcrumb.Item>
-                    <Breadcrumb.Item>Add</Breadcrumb.Item>
+                    <Breadcrumb.Item>Edit</Breadcrumb.Item>
                 </Breadcrumb>
             </div>
             <div className="mb-6 bg-white dark:bg-gray-700 p-6 rounded-lg">
@@ -118,12 +118,10 @@ const RadioInfoEditPage = ({ params }: { params: { id: string } }) => {
                                     required: true,
                                     minLength: 3,
                                     maxLength: 255,
-                                    pattern: /([A-Za-z]+( [A-Za-z]+)+)/,
                                 })}
                                 id="name"
                                 type="text"
                                 placeholder="Insert name here"
-                                required
                                 color={
                                     getValues("name") == "" ? "failure"
                                         : (getValues("name") ? getValues("name")?.length : 0) < 3 ? "failure"

@@ -1,15 +1,21 @@
-import { Personalities } from "./Personalities";
+import { PersonalityInfo } from "./PersonalityInfo";
+import { RadioInfo } from "./RadioInfo";
 
 export interface RadioTracks {
+  // Main
   id: string;
-  name: string;
-  name_jp: string;
+  radio_info: RadioInfo;
   episode: number;
   radio_oa: string;
-  personalities: Array<Personalities>;
-  radio_image: string;
-  track_image: string;
+  image: string;
   src: string;
+  favoritedBy: number;
   createdAt: Date;
   updatedAt: Date;
+  // Get
+  name: string;
+  name_jp: string;
+  track_image: string;
+  radio_image: string;
+  personalities: Array<PersonalityInfo>;
 }

@@ -207,7 +207,7 @@ const RadioInfoTable: React.FC = () => {
                     />
                 </Table.Cell>
                 <Table.Cell>
-                    <div className='max-w-12 aspect-square overflow-hidden rounded-lg'>
+                    <div className='max-w-24 aspect-square overflow-hidden rounded-lg'>
                         {data.info?.image != "" ? (
                             <Image className='w-full h-auto object-cover' height={48} width={48} src={data.info?.image} title={data.info?.name} alt={data.info?.name} loading="lazy" />
                         ) : (

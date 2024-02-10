@@ -21,7 +21,6 @@ const RadioInfoAddPage = () => {
         register,
         handleSubmit,
         watch,
-        setValue,
         getValues,
         formState: { errors },
     } = useForm<RadioInfo>()
@@ -53,6 +52,8 @@ const RadioInfoAddPage = () => {
         stopLoading()
         watch()
     }, [stopLoading, watch])
+
+    console.log(watch())
 
     return (
         <AdminLayout>
@@ -86,14 +87,10 @@ const RadioInfoAddPage = () => {
                                 defaultValue=""
                                 {...register("name", {
                                     required: true,
-                                    minLength: 3,
-                                    maxLength: 255,
-                                    pattern: /([A-Za-z]+( [A-Za-z]+)+)/,
                                 })}
                                 id="name"
                                 type="text"
                                 placeholder="Insert name here"
-                                required
                                 color={
                                     getValues("name") == "" ? "failure"
                                         : (getValues("name") ? getValues("name")?.length : 0) < 3 ? "failure"

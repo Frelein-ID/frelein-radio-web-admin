@@ -101,7 +101,6 @@ const PersonalityInfoAddPage = () => {
                                     required: true,
                                     minLength: 3,
                                     maxLength: 255,
-                                    pattern: /([A-Za-z]+( [A-Za-z]+)+)/,
                                 })}
                                 defaultValue=""
                                 id="name"
