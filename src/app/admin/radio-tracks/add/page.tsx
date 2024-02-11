@@ -1,8 +1,8 @@
 "use client"
 
-import { Breadcrumb, Button, Datepicker, Label, Select, Spinner, TextInput, Textarea } from 'flowbite-react'
+import { Breadcrumb, Button, Datepicker, Label, Select, Spinner, TextInput, Tooltip } from 'flowbite-react'
 import React, { useEffect, useState } from 'react'
-import { HiHome } from "react-icons/hi";
+import { HiHome, HiOutlineX } from "react-icons/hi";
 import AdminLayout from '../../adminLayout';
 import { useRouter } from 'next/navigation';
 import { RadioTracks } from '@/app/_interfaces/RadioTracks';
@@ -13,12 +13,18 @@ import { useLoading } from '@/app/_context/loadingContext';
 import { Response } from '@/app/_interfaces/Response';
 import { RadioInfo } from '@/app/_interfaces/RadioInfo';
 import { getAllRadioInfo } from '@/app/_services/RadioInfoServices';
+import { PersonalityInfo } from '@/app/_interfaces/PersonalityInfo';
+import { getAllPersonalityInfo } from '@/app/_services/PersonalityServices';
+import { Personalities } from '@/app/_interfaces/Personalities';
+import { assignPersonalitiesToRadioTrack } from '@/app/_services/PersonalitiesServices';
 
 const RadioTracksAddPage = () => {
     const router = useRouter()
     const { stopLoading, startLoading } = useLoading()
     const [isCompLoading, setIsCompLoading] = useState(false)
     const [radioInfo, setRadioInfo] = useState<RadioInfo[]>([])
+    const [personalitiyInfo, setPersonalityInfo] = useState<PersonalityInfo[]>([])
+    const [personalities, setPersonalities] = useState([''])
 
     const {
         register,
@@ -32,8 +38,22 @@ const RadioTracksAddPage = () => {
 
     const onSubmit: SubmitHandler<RadioTracks> = async (data) => {
         setIsCompLoading(true)
-        const response: Response = await createRadioTracks(data)
-        if (response?.status === 201) {
+        const radioTracksData: RadioTracks = {
+            radio_info: data.radio_info,
+            episode: data.episode,
+            radio_oa: data.radio_oa,
+            image: data.image,
+            src: data.src,
+        }
+        await createRadioTracks(radioTracksData).then((value: Response) => {
+            data.personalities?.forEach(async (person: PersonalityInfo) => {
+                const personalitiesData: Personalities = {
+                    tracks_id: value.data.id,
+                    personality_id: person.id
+                }
+                await assignPersonalitiesToRadioTrack(personalitiesData)
+            })
+        }).finally(() => {
             setIsCompLoading(false)
             swal({
                 title: "Success!",
@@ -44,14 +64,17 @@ const RadioTracksAddPage = () => {
                     router.push("/admin/radio-tracks")
                 }
             })
-        } else {
-            setIsCompLoading(false)
-            swal({
-                title: "Error",
-                text: response?.message,
-                icon: "error",
-            })
-        }
+        })
+    }
+
+    const handleAddPersonalities = () => {
+        setPersonalities([...personalities, ''])
+    }
+
+    const handleRemovePersonalities = (index: number) => {
+        const newPersonalities = [...personalities];
+        newPersonalities.splice(index, 1);
+        setPersonalities(newPersonalities);
     }
 
     useEffect(() => {
@@ -60,7 +83,10 @@ const RadioTracksAddPage = () => {
                 await getAllRadioInfo().then((value: Response) => {
                     setRadioInfo(value.data)
                     setValue("radio_info", value.data.radio_info)
-                }).finally(stopLoading())
+                })
+                await getAllPersonalityInfo().then((value: Response) => {
+                    setPersonalityInfo(value.data)
+                })
             } catch (error) {
                 throw error
             }
@@ -70,6 +96,7 @@ const RadioTracksAddPage = () => {
     }, [setValue, stopLoading, watch])
 
     console.log(watch())
+
     return (
         <AdminLayout>
             <div className="mb-6">
@@ -93,7 +120,8 @@ const RadioTracksAddPage = () => {
             </div>
             <div className="mb-6 bg-white dark:bg-gray-700 p-6 rounded-lg">
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-                    <div className="grid grid-cols-2 gap-6">
+                    <h3>Radio Tracks Information</h3>
+                    <div className="grid grid-cols-2 gap-6 mb-6">
                         <div>
                             <div className="mb-2 block">
                                 <Label htmlFor="radio_info" value="Radio" />
@@ -240,6 +268,49 @@ const RadioTracksAddPage = () => {
                                 }
                             />
                         </div>
+                    </div>
+                    <h3>Radio Tracks Personalities</h3>
+                    <div className="grid grid-cols-2 gap-6 mb-6">
+                        {personalities.map((id: string, index: number) => {
+
+                            <div className="mb-2 block">
+                                <Label htmlFor="personalities" value="Assign personalities" />
+                            </div>
+                            return (
+                                <div key={index} className="flex items-start justify-start gap-4">
+                                    <Select
+                                        {...register(`personalities.${index}.id`, { required: false })}
+                                        id="personalities"
+                                        color={
+                                            getValues(`personalities.${index}.id`) ? "success" : "failure"
+                                        }
+                                        helperText={
+                                            getValues(`personalities.${index}.id`) ? (
+                                                <>
+                                                    <span className="font-medium">Alright</span> this is good.
+                                                </>
+                                            ) : (
+                                                <>
+                                                    Please set <span className="font-medium">Radio information</span> properly.
+                                                </>
+                                            )
+                                        }
+                                    >
+                                        {personalitiyInfo?.map((info, index) => {
+                                            return (
+                                                <option key={index} value={info.id}>{`${info.name} 「${info.name_jp}」`}</option>
+                                            )
+                                        })}
+                                    </Select>
+                                    <Tooltip content="Remove personalities">
+                                        <Button onClick={() => handleRemovePersonalities(index)}>
+                                            <HiOutlineX className="relative h-5 w-5" />
+                                        </Button>
+                                    </Tooltip>
+                                </div>
+                            )
+                        })}
+                        <Button onClick={handleAddPersonalities} className='relative w-full rounded-lg overflow-hidden flex justify-center items-center border disabled:cursor-not-allowed disabled:opacity-50 border-dashed' color="light">Add more personalities</Button>
                     </div>
                     <Button type="submit" disabled={isCompLoading ? true : false}>{isCompLoading ? (
                         <>

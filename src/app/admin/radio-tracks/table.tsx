@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Button, Checkbox, CustomFlowbiteTheme, Dropdown, Spinner, Table, TextInput } from 'flowbite-react'
+import { Button, Checkbox, CustomFlowbiteTheme, Dropdown, Spinner, Table, TextInput, Tooltip } from 'flowbite-react'
 import { HiPencil, HiOutlineTrash } from "react-icons/hi";
 import swal from 'sweetalert';
 import { WARNING_SUBTITLE, WARNING_TITLE } from '@/app/_constants/constants';
@@ -19,7 +19,7 @@ import { deleteRadioTracks, getAllRadioTracks } from '@/app/_services/RadioTrack
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
         cell: {
-            base: "bg-gray-50 dark:bg-gray-700 px-6 py-3 hover:cursor-pointer"
+            base: "blockbg-gray-50 dark:bg-gray-700 px-6 py-3 hover:cursor-pointer"
         }
     }
 }
@@ -128,7 +128,7 @@ const RadioTracksTable: React.FC = () => {
             const newState: { [key: string]: 'checked' | 'unchecked' } = {};
 
             RadioTracks.forEach((row) => {
-                newState[row.id] = newAllState;
+                newState[row.id!] = newAllState;
             });
 
             const allChecked = newAllState === 'checked';
@@ -159,10 +159,10 @@ const RadioTracksTable: React.FC = () => {
         }
 
         return [...RadioTracks].sort((a, b) => {
-            if (a[sortConfig.key] < b[sortConfig.key]) {
+            if (!a[sortConfig.key] < !b[sortConfig.key]) {
                 return sortConfig.direction === 'asc' ? -1 : 1;
             }
-            if (a[sortConfig.key] > b[sortConfig.key]) {
+            if (!a[sortConfig.key] > !b[sortConfig.key]) {
                 return sortConfig.direction === 'asc' ? 1 : -1;
             }
             return 0;
@@ -192,28 +192,28 @@ const RadioTracksTable: React.FC = () => {
     const TableRow = (
         data: TableRowProps
     ) => {
-        let personalities_name = data.info.personalities.map((person: any) => person.name)
+        let personalities_name = data.info.personalities!.map((person: any) => person.name)
         let personalities_name_final = personalities_name.join(', ')
         console.log({ personalities_name_final })
         return (
             <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                 <Table.Cell className="p-4">
                     <Checkbox
-                        checked={checkboxState[data?.info.id] === 'checked'}
+                        checked={checkboxState[data?.info.id!] === 'checked'}
                         onChange={() => {
-                            handleCheckboxChange(data?.info.id)
+                            handleCheckboxChange(data?.info.id!)
                         }}
                     />
                 </Table.Cell>
                 <Table.Cell>
                     <div className='w-24 aspect-square overflow-hidden rounded-lg'>
                         {data.info?.track_image != "" ? (
-                            <Image className='w-full h-auto object-cover' height={48} width={48} src={data.info?.track_image} title={`${data.info?.name} 「${data.info?.name_jp}」 - Episode ${data.info?.episode}`} alt={`${data.info?.name} 「${data.info?.name_jp}」 - Episode ${data.info?.episode}`} loading="lazy" />
+                            <Image className='w-full h-auto object-cover' height={48} width={48} src={data.info?.track_image!} title={`${data.info?.name} 「${data.info?.name_jp}」 - Episode ${data.info?.episode}`} alt={`${data.info?.name} 「${data.info?.name_jp}」 - Episode ${data.info?.episode}`} loading="lazy" />
                         ) : data.info?.track_image == "" || null ? (
-                            <Image className='w-full h-auto object-cover' height={48} width={48} src={data.info?.radio_image} title={`${data.info?.name} 「${data.info?.name_jp}」 - Episode ${data.info?.episode}`} alt={`${data.info?.name} 「${data.info?.name_jp}」 - Episode ${data.info?.episode}`} loading="lazy" />
+                            <Image className='w-full h-auto object-cover' height={48} width={48} src={data.info?.radio_image!} title={`${data.info?.name} 「${data.info?.name_jp}」 - Episode ${data.info?.episode}`} alt={`${data.info?.name} 「${data.info?.name_jp}」 - Episode ${data.info?.episode}`} loading="lazy" />
                         ) : (
                             <div className='flex justify-center items-center w-full h-full object-cover bg-gray-100 dark:bg-gray-700 text-lg font-bold'>
-                                {Array.from(data.info?.name)[0]}
+                                {Array.from(data.info?.name!)[0]}
                             </div>
                         )}
                     </div>
@@ -224,9 +224,9 @@ const RadioTracksTable: React.FC = () => {
                 <Table.Cell className="max-w-40 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
                     {personalities_name_final !== "" ? personalities_name_final : "No personalities assigned"}
                 </Table.Cell>
-                <Table.Cell className='max-w-40 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{data.info?.episode}</Table.Cell>
-                <Table.Cell className='max-w-40 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{moment(data.info?.createdAt).fromNow()}</Table.Cell>
-                <Table.Cell className='max-w-40 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>{moment(data.info?.updatedAt).fromNow()}</Table.Cell>
+                <Table.Cell className='max-w-40 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis text-gray-900 dark:text-white'>{data.info?.episode}</Table.Cell>
+                <Table.Cell className='max-w-40 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis text-gray-900 dark:text-white'>{moment(data.info?.createdAt).fromNow()}</Table.Cell>
+                <Table.Cell className='max-w-40 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis text-gray-900 dark:text-white'>{moment(data.info?.updatedAt).fromNow()}</Table.Cell>
                 <Table.Cell>
                     <Button onClick={() => {
                         startLoading()
@@ -236,7 +236,7 @@ const RadioTracksTable: React.FC = () => {
                     </Button>
                 </Table.Cell>
                 <Table.Cell>
-                    <Button onClick={() => { handleSingleDelete(data.info?.id) }} color='failure'>
+                    <Button onClick={() => { handleSingleDelete(data.info?.id!) }} color='failure'>
                         <HiOutlineTrash className='text-white' />
                     </Button>
                 </Table.Cell>
@@ -260,7 +260,7 @@ const RadioTracksTable: React.FC = () => {
     }, [stopLoading])
 
     const filteredData = sortedData().filter((row) =>
-        row.id.toLowerCase().includes(searchTerm.toLowerCase())
+        row.id!.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);

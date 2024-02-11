@@ -44,10 +44,6 @@ const CustomSidebar = () => {
                                 startLoading()
                                 router.push("/admin/personality-info")
                             }}>Information</Sidebar.Item>
-                            <Sidebar.Item onClick={() => {
-                                startLoading()
-                                router.push("/admin/personalities")
-                            }}>Assign</Sidebar.Item>
                         </Sidebar.Collapse>
                         <Sidebar.Item onClick={() => {
                             startLoading()
