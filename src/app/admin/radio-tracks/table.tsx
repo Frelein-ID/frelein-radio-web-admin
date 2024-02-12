@@ -14,7 +14,7 @@ import { Response } from '@/app/_interfaces/Response';
 import { HiSearch } from "react-icons/hi";
 import { useLoading } from '@/app/_context/loadingContext';
 import { RadioTracks } from '@/app/_interfaces/RadioTracks';
-import { deleteRadioTracks, getAllRadioTracks } from '@/app/_services/RadioTracksServices';
+import { deleteRadioTracks, getAllRadioTracks, getRadioTracksByID } from '@/app/_services/RadioTracksServices';
 import { PersonalityInfo } from '@/app/_interfaces/PersonalityInfo';
 import { deletePersonalitiesFromRadioTrack } from '@/app/_services/PersonalitiesServices';
 
@@ -68,7 +68,6 @@ const RadioTracksTable: React.FC = () => {
                 if (willDelete) {
                     data.personalities?.forEach(async (value: PersonalityInfo, index: number) => {
                         await deletePersonalitiesFromRadioTrack(value.id)
-                        data.personalities?.splice(index)
                     })
                     const response: Response = await deleteRadioTracks(data.id!)
                     if (response?.status == 200) {
@@ -100,6 +99,11 @@ const RadioTracksTable: React.FC = () => {
             .then(async (willDelete) => {
                 if (willDelete) {
                     for (var data of checkboxFilteredKeys) {
+                        await getRadioTracksByID(data).then((value: Response) => {
+                            value.data.personalities.forEach(async (value: PersonalityInfo, index: number) => {
+                                await deletePersonalitiesFromRadioTrack(value.id)
+                            })
+                        })
                         await deleteRadioTracks(data)
                         const newData = await getAllRadioTracks()
                         setCheckboxFilteredKeys(checkboxFilteredKeys.filter((item) => item !== data))
@@ -274,6 +278,7 @@ const RadioTracksTable: React.FC = () => {
     const currentData = filteredData.slice(startIndex, endIndex);
 
 
+    console.log({ checkboxFilteredKeys, checkboxState })
     return (
         <>
             <div className='p-4 flex flex-row justify-between items-center bg-white dark:bg-gray-800'>
