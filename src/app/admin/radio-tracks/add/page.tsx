@@ -23,11 +23,12 @@ const RadioTracksAddPage = () => {
     const { stopLoading, startLoading } = useLoading()
     const [isCompLoading, setIsCompLoading] = useState(false)
     const [radioInfo, setRadioInfo] = useState<RadioInfo[]>([])
-    const [personalitiyInfo, setPersonalityInfo] = useState<PersonalityInfo[]>([])
+    const [personalityInfo, setPersonalityInfo] = useState<PersonalityInfo[]>([])
     const [personalities, setPersonalities] = useState([''])
 
     const {
         register,
+        unregister,
         handleSubmit,
         watch,
         setValue,
@@ -46,10 +47,10 @@ const RadioTracksAddPage = () => {
             src: data.src,
         }
         await createRadioTracks(radioTracksData).then((value: Response) => {
-            data.personalities?.forEach(async (person: PersonalityInfo) => {
+            data.personalities?.forEach(async (person: Personalities) => {
                 const personalitiesData: Personalities = {
                     tracks_id: value.data.id,
-                    personality_id: person.id
+                    personality_id: person.id!
                 }
                 await assignPersonalitiesToRadioTrack(personalitiesData)
             })
@@ -75,6 +76,7 @@ const RadioTracksAddPage = () => {
         const newPersonalities = [...personalities];
         newPersonalities.splice(index, 1);
         setPersonalities(newPersonalities);
+        unregister(`personalities.${index}.id`)
     }
 
     useEffect(() => {
@@ -272,7 +274,6 @@ const RadioTracksAddPage = () => {
                     <h3>Radio Tracks Personalities</h3>
                     <div className="grid grid-cols-2 gap-6 mb-6">
                         {personalities.map((id: string, index: number) => {
-
                             <div className="mb-2 block">
                                 <Label htmlFor="personalities" value="Assign personalities" />
                             </div>
@@ -296,7 +297,7 @@ const RadioTracksAddPage = () => {
                                             )
                                         }
                                     >
-                                        {personalitiyInfo?.map((info, index) => {
+                                        {personalityInfo?.map((info, index) => {
                                             return (
                                                 <option key={index} value={info.id}>{`${info.name} 「${info.name_jp}」`}</option>
                                             )

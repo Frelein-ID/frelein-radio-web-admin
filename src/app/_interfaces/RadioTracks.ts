@@ -1,3 +1,4 @@
+import { Personalities } from "./Personalities";
 import { PersonalityInfo } from "./PersonalityInfo";
 import { RadioInfo } from "./RadioInfo";
 
@@ -17,5 +18,5 @@ export interface RadioTracks {
   name_jp?: string;
   track_image?: string;
   radio_image?: string;
-  personalities?: PersonalityInfo[];
+  personalities?: Personalities[];
 }

@@ -31,6 +31,30 @@ export const assignPersonalitiesToRadioTrack = async (
   }
 };
 
+export const updatePersonalitiesFromRadioTracks = async (
+  id: string,
+  updatedPersonalities: Personalities
+): Promise<Response> => {
+  try {
+    const token = loadDataFromStorage("token");
+    const response = await axios.put(
+      `${baseURL}/personalities/${id}`,
+      updatedPersonalities,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Access-Token": accessToken,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating personalities ${id}:`, error);
+    throw error;
+  }
+};
+
 export const deletePersonalitiesFromRadioTrack = async (
   id: string
 ): Promise<Response> => {
