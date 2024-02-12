@@ -1,9 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { getAdminData } from "../_services/AdminServices";
 import { Users } from "../_interfaces/Users";
-import { useEffect } from "react";
 
 export const loadDataFromStorage = (key: string): string => {
   const data = localStorage.getItem(key) || "";

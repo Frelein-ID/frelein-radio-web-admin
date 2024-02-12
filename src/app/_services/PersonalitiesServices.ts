@@ -30,3 +30,23 @@ export const assignPersonalitiesToRadioTrack = async (
     throw error;
   }
 };
+
+export const deletePersonalitiesFromRadioTrack = async (
+  id: string
+): Promise<Response> => {
+  try {
+    const token = loadDataFromStorage("token");
+    const response = await axios.delete<Response>(
+      `${baseURL}/personalities/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Access-Token": accessToken,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

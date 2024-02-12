@@ -15,6 +15,8 @@ import { HiSearch } from "react-icons/hi";
 import { useLoading } from '@/app/_context/loadingContext';
 import { RadioTracks } from '@/app/_interfaces/RadioTracks';
 import { deleteRadioTracks, getAllRadioTracks } from '@/app/_services/RadioTracksServices';
+import { PersonalityInfo } from '@/app/_interfaces/PersonalityInfo';
+import { deletePersonalitiesFromRadioTrack } from '@/app/_services/PersonalitiesServices';
 
 const tableTheme: CustomFlowbiteTheme['table'] = {
     head: {
@@ -54,7 +56,7 @@ const RadioTracksTable: React.FC = () => {
 
     // function
     function handleSingleDelete(
-        id: string,
+        data: RadioTracks
     ) {
         swal({
             title: WARNING_TITLE,
@@ -64,7 +66,11 @@ const RadioTracksTable: React.FC = () => {
         })
             .then(async (willDelete) => {
                 if (willDelete) {
-                    const response: Response = await deleteRadioTracks(id)
+                    data.personalities?.forEach(async (value: PersonalityInfo, index: number) => {
+                        await deletePersonalitiesFromRadioTrack(value.id)
+                        data.personalities?.splice(index)
+                    })
+                    const response: Response = await deleteRadioTracks(data.id!)
                     if (response?.status == 200) {
                         swal({
                             title: "Success!",
@@ -194,7 +200,6 @@ const RadioTracksTable: React.FC = () => {
     ) => {
         let personalities_name = data.info.personalities!.map((person: any) => person.name)
         let personalities_name_final = personalities_name.join(', ')
-        console.log({ personalities_name_final })
         return (
             <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                 <Table.Cell className="p-4">
@@ -218,13 +223,13 @@ const RadioTracksTable: React.FC = () => {
                         )}
                     </div>
                 </Table.Cell>
-                <Table.Cell className="max-w-40 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
+                <Table.Cell className="max-w-40 text-wrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
                     {`${data.info?.name} - 「${data.info?.name_jp}」`}
                 </Table.Cell>
-                <Table.Cell className="max-w-40 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
+                <Table.Cell className="max-w-40 text-wrap overflow-hidden text-ellipsis font-medium text-gray-900 dark:text-white">
                     {personalities_name_final !== "" ? personalities_name_final : "No personalities assigned"}
                 </Table.Cell>
-                <Table.Cell className='max-w-40 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis text-gray-900 dark:text-white'>{data.info?.episode}</Table.Cell>
+                <Table.Cell className='max-w-40 text-wrap overflow-hidden text-ellipsis text-gray-900 dark:text-white'>{data.info?.episode}</Table.Cell>
                 <Table.Cell className='max-w-40 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis text-gray-900 dark:text-white'>{moment(data.info?.createdAt).fromNow()}</Table.Cell>
                 <Table.Cell className='max-w-40 text-nowrap whitespace-nowrap overflow-hidden text-ellipsis text-gray-900 dark:text-white'>{moment(data.info?.updatedAt).fromNow()}</Table.Cell>
                 <Table.Cell>
@@ -236,7 +241,7 @@ const RadioTracksTable: React.FC = () => {
                     </Button>
                 </Table.Cell>
                 <Table.Cell>
-                    <Button onClick={() => { handleSingleDelete(data.info?.id!) }} color='failure'>
+                    <Button onClick={() => { handleSingleDelete(data.info) }} color='failure'>
                         <HiOutlineTrash className='text-white' />
                     </Button>
                 </Table.Cell>
@@ -248,10 +253,10 @@ const RadioTracksTable: React.FC = () => {
         const fetchData = async () => {
             try {
                 const response = await getAllRadioTracks()
-                console.log(response)
                 setRadioTracks(response?.data)
+                console.log({ response })
             } catch (error) {
-                console.log(error)
+                throw error
             } finally {
                 stopLoading()
             }
