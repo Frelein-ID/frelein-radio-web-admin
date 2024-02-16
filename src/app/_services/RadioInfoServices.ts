@@ -20,8 +20,8 @@ export const createRadioInfo = async (
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -35,8 +35,8 @@ export const getAllRadioInfo = async (): Promise<Response> => {
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -50,8 +50,8 @@ export const getRadioInfoByID = async (id: string): Promise<Response> => {
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -73,8 +73,8 @@ export const updateRadioInfo = async (
       }
     );
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -88,7 +88,7 @@ export const deleteRadioInfo = async (id: string): Promise<Response> => {
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };

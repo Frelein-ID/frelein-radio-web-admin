@@ -166,10 +166,10 @@ const PersonalityInfoTable: React.FC = () => {
         }
 
         return [...personalityInfo].sort((a, b) => {
-            if (a[sortConfig.key] < b[sortConfig.key]) {
+            if (a[sortConfig?.key]! < b[sortConfig?.key]!) {
                 return sortConfig.direction === 'asc' ? -1 : 1;
             }
-            if (a[sortConfig.key] > b[sortConfig.key]) {
+            if (a[sortConfig?.key]! > b[sortConfig?.key]!) {
                 return sortConfig.direction === 'asc' ? 1 : -1;
             }
             return 0;

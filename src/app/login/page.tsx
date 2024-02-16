@@ -11,6 +11,7 @@ import { storeDataToStoage } from '../_utils/auth-utils'
 import { Response } from '../_interfaces/Response'
 import { NextSeo } from 'next-seo'
 import { useLoading } from '../_context/loadingContext'
+import swal from 'sweetalert'
 
 const LoginPage = () => {
     const router = useRouter()
@@ -25,16 +26,22 @@ const LoginPage = () => {
     const onSubmit: SubmitHandler<Users> = async (data) => {
         startLoading()
         const response: Response = await login(data)
-        const token: string = response?.data?.token
-        const userId: string = response?.data?.id
-        storeDataToStoage(token, "token")
-        storeDataToStoage(userId, "userId")
-        router.push("/admin/dashboard")
+        if (response?.status === 200) {
+            const token: string = response?.data?.token
+            const userId: string = response?.data?.id
+            storeDataToStoage(token, "token")
+            storeDataToStoage(userId, "userId")
+            router.push("/admin/dashboard")
+            stopLoading()
+        } else {
+            swal({
+                title: "Error",
+                text: response?.message,
+                icon: "error",
+            })
+            stopLoading()
+        }
     }
-
-    useEffect(() => {
-        stopLoading()
-    }, [stopLoading])
     return (
         <>
             <NextSeo

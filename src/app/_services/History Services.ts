@@ -18,8 +18,8 @@ export const getHistoryByID = async (
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -33,7 +33,7 @@ export const getAllHistory = async (): Promise<History[]> => {
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };

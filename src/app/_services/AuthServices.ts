@@ -24,7 +24,7 @@ export const login = async (data: Users): Promise<Response> => {
       }
     );
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };

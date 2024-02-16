@@ -23,8 +23,8 @@ export const assignPersonalitiesToRadioTrack = async (
       }
     );
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -46,8 +46,8 @@ export const updatePersonalitiesFromRadioTracks = async (
       }
     );
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -66,7 +66,7 @@ export const deletePersonalitiesFromRadioTrack = async (
       }
     );
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };

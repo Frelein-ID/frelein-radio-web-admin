@@ -20,8 +20,8 @@ export const createPersonalityInfo = async (
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -35,8 +35,8 @@ export const getPersonalityInfoByID = async (id: string): Promise<Response> => {
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -50,8 +50,8 @@ export const getAllPersonalityInfo = async (): Promise<Response> => {
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -73,8 +73,8 @@ export const updatePersonalityInfo = async (
       }
     );
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -88,7 +88,7 @@ export const deletePersonalityInfo = async (id: string): Promise<Response> => {
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };

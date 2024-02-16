@@ -17,8 +17,8 @@ export const getUserByID = async (id: Promise<Users["id"]>): Promise<Users> => {
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -32,8 +32,8 @@ export const getAllUser = async (): Promise<Response> => {
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -51,8 +51,8 @@ export const updateUser = async (
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -66,7 +66,7 @@ export const deleteUser = async (id: string): Promise<Response> => {
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };

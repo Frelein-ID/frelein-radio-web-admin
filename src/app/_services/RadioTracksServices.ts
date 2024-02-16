@@ -20,8 +20,8 @@ export const createRadioTracks = async (
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -35,8 +35,8 @@ export const getAllRadioTracks = async (): Promise<Response> => {
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -50,8 +50,8 @@ export const getRadioTracksByID = async (id: string): Promise<Response> => {
       },
     });
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -73,8 +73,8 @@ export const updateRadioTracks = async (
       }
     );
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -91,7 +91,7 @@ export const deleteRadioTracks = async (id: string): Promise<Response> => {
       }
     );
     return response.data;
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
