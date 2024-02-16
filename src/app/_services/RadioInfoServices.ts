@@ -20,8 +20,8 @@ export const createRadioInfo = async (
       },
     });
     return response.data;
-  } catch (error: any) {
-    throw error.response.data;
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -36,7 +36,6 @@ export const getAllRadioInfo = async (): Promise<Response> => {
     });
     return response.data;
   } catch (error) {
-    console.log("Error fetching radio info:", error);
     throw error;
   }
 };
@@ -51,8 +50,8 @@ export const getRadioInfoByID = async (id: string): Promise<Response> => {
       },
     });
     return response.data;
-  } catch (error: any) {
-    throw error.response.data;
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -75,7 +74,6 @@ export const updateRadioInfo = async (
     );
     return response.data;
   } catch (error) {
-    console.error(`Error updating radio info with ID ${id}:`, error);
     throw error;
   }
 };
@@ -91,7 +89,6 @@ export const deleteRadioInfo = async (id: string): Promise<Response> => {
     });
     return response.data;
   } catch (error) {
-    console.log("Error deleting radio info:", error);
     throw error;
   }
 };

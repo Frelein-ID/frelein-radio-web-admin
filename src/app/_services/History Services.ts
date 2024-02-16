@@ -19,7 +19,6 @@ export const getHistoryByID = async (
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching history:", error);
     throw error;
   }
 };
@@ -35,7 +34,6 @@ export const getAllHistory = async (): Promise<History[]> => {
     });
     return response.data;
   } catch (error) {
-    console.log("Error fetching history:", error);
     throw error;
   }
 };

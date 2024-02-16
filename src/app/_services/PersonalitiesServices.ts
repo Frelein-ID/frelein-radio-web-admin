@@ -1,10 +1,8 @@
-import dotenv from "dotenv";
+import "dotenv/config";
 import axios from "axios";
 import { Response } from "../_interfaces/Response";
 import { loadDataFromStorage } from "../_utils/auth-utils";
 import { Personalities } from "../_interfaces/Personalities";
-
-dotenv.config();
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 const accessToken = process.env.NEXT_PUBLIC_ACCESS_TOKEN || "";
@@ -26,7 +24,6 @@ export const assignPersonalitiesToRadioTrack = async (
     );
     return response.data;
   } catch (error) {
-    console.log({ error });
     throw error;
   }
 };
@@ -50,7 +47,6 @@ export const updatePersonalitiesFromRadioTracks = async (
     );
     return response.data;
   } catch (error) {
-    console.error(`Error updating personalities ${id}:`, error);
     throw error;
   }
 };

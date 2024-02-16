@@ -18,7 +18,6 @@ export const getUserByID = async (id: Promise<Users["id"]>): Promise<Users> => {
     });
     return response.data;
   } catch (error) {
-    console.error(error);
     throw error;
   }
 };
@@ -34,7 +33,6 @@ export const getAllUser = async (): Promise<Response> => {
     });
     return response.data;
   } catch (error) {
-    console.log(error);
     throw error;
   }
 };
@@ -54,22 +52,21 @@ export const updateUser = async (
     });
     return response.data;
   } catch (error) {
-    console.error(error);
     throw error;
   }
 };
 
-export const deleteUser = async (id: string): Promise<void> => {
+export const deleteUser = async (id: string): Promise<Response> => {
   try {
     const token = loadDataFromStorage("token");
-    await axios.delete(`${baseURL}/user/${id}`, {
+    const response: Response = await axios.delete(`${baseURL}/user/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Access-Token": accessToken,
       },
     });
+    return response.data;
   } catch (error) {
-    console.log(error);
     throw error;
   }
 };

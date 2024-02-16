@@ -1,5 +1,4 @@
-"use client";
-
+import "dotenv/config";
 import axios from "axios";
 import { Users } from "../_interfaces/Users";
 import { Response } from "../_interfaces/Response";
@@ -26,7 +25,6 @@ export const login = async (data: Users): Promise<Response> => {
     );
     return response.data;
   } catch (error) {
-    console.log({ error });
     throw error;
   }
 };

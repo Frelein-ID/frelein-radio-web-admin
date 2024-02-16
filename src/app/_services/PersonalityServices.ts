@@ -20,8 +20,8 @@ export const createPersonalityInfo = async (
       },
     });
     return response.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -36,7 +36,6 @@ export const getPersonalityInfoByID = async (id: string): Promise<Response> => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error creating personality info:", error);
     throw error;
   }
 };
@@ -52,7 +51,6 @@ export const getAllPersonalityInfo = async (): Promise<Response> => {
     });
     return response.data;
   } catch (error) {
-    console.log("Error fetching personality info:", error);
     throw error;
   }
 };
@@ -76,7 +74,6 @@ export const updatePersonalityInfo = async (
     );
     return response.data;
   } catch (error) {
-    console.error(`Error updating personality info with ID ${id}:`, error);
     throw error;
   }
 };
@@ -92,7 +89,6 @@ export const deletePersonalityInfo = async (id: string): Promise<Response> => {
     });
     return response.data;
   } catch (error) {
-    console.log("Error deleting personality info:", error);
     throw error;
   }
 };
